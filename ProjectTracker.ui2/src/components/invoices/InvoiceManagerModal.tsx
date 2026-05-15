@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useProjectInvoices, useCreateInvoice, useUpdateInvoice, useDeleteInvoice } from '@/hooks/useInvoices'
 import { useProjectTasks } from '@/hooks/useTasks'
+import { useClients } from '@/hooks/useClients'
 import { useSettings } from '@/hooks/useSettings'
 import { InvoiceTemplate } from './InvoiceTemplate'
 import { formatCurrency } from '@/lib/utils'
@@ -136,11 +137,13 @@ function ListView({ projectId, onCreate, onEdit, onPrint }: ListViewProps) {
 
 interface CreateViewProps {
   projectId: number
+  clientId?: number | null
   onBack: () => void
 }
 
-function CreateView({ projectId, onBack }: CreateViewProps) {
+function CreateView({ projectId, clientId, onBack }: CreateViewProps) {
   const { data: tasks = [] } = useProjectTasks(projectId)
+  const { data: clients = [] } = useClients()
   const createInvoice = useCreateInvoice()
 
   const uninvoiced = tasks.filter(t => !t.parentTaskId && !t.isInvoiced && t.totalHours > 0)
@@ -152,6 +155,16 @@ function CreateView({ projectId, onBack }: CreateViewProps) {
   const [dueDate, setDueDate]     = useState('')
   const [taxRate, setTaxRate]     = useState(0)
   const [notes, setNotes]         = useState('')
+
+  useEffect(() => {
+    if (clientId) {
+      const client = clients.find(c => c.id === clientId)
+      if (client) {
+        setClientName(client.name)
+        setClientAddress(client.address || '')
+      }
+    }
+  }, [clientId, clients])
 
   const toggle = (id: number) => {
     setSelected(prev => {
@@ -524,7 +537,7 @@ export function InvoiceManagerModal({ open, onClose, project }: Props) {
                     />
                   )}
                   {view === 'create' && (
-                    <CreateView projectId={project.id} onBack={handleBack} />
+                    <CreateView projectId={project.id} clientId={project.clientId} onBack={handleBack} />
                   )}
                   {view === 'edit' && editingInvoice && (
                     <EditView invoice={editingInvoice} onBack={handleBack} onPrint={handlePrint} />

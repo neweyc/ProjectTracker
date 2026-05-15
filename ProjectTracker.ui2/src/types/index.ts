@@ -4,6 +4,15 @@ export interface User {
   email: string
   displayName: string
   subscriptionStatus?: string | null
+  subscriptionTier?: string | null
+}
+
+export interface Client {
+  id: number
+  name: string
+  email?: string | null
+  address?: string | null
+  createdAt: string
 }
 
 export type TaskStatus = 'Created' | 'InProgress' | 'Complete'
@@ -14,6 +23,7 @@ export interface Project {
   description?: string | null
   createdAt: string
   taskCount: number
+  clientId?: number | null
 }
 
 export interface Task {

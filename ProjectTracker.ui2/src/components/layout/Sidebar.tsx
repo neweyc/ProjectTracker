@@ -6,6 +6,7 @@ import {
   BarChart, Bar, XAxis, ResponsiveContainer, Tooltip
 } from 'recharts'
 import { useProjects } from '@/hooks/useProjects'
+import { useClients } from '@/hooks/useClients'
 import { CreateProjectModal } from './CreateProjectModal'
 import type { Project } from '@/types'
 
@@ -26,6 +27,7 @@ function getProjectColor(id: number): string {
 
 export function Sidebar({ selectedProjectId, onSelectProject, onOpenSettings }: SidebarProps) {
   const { data: projects = [] } = useProjects()
+  const { data: clients = [] } = useClients()
   const { user, logout } = useAuth()
   const [createOpen, setCreateOpen] = useState(false)
 
@@ -95,6 +97,8 @@ export function Sidebar({ selectedProjectId, onSelectProject, onOpenSettings }: 
           {projects.map((project, i) => {
             const color = getProjectColor(project.id)
             const isActive = selectedProjectId === project.id
+            const client = clients.find(c => c.id === project.clientId)
+
             return (
               <motion.button
                 key={project.id}
@@ -120,7 +124,14 @@ export function Sidebar({ selectedProjectId, onSelectProject, onOpenSettings }: 
                   className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: color }}
                 />
-                <span className="truncate flex-1 text-left font-medium text-sm">{project.name}</span>
+                <div className="flex-1 min-w-0 flex flex-col items-start">
+                  <span className="truncate w-full font-medium text-sm text-left">{project.name}</span>
+                  {client && (
+                    <span className="text-[10px] text-gray-500 group-hover:text-gray-400 truncate w-full text-left">
+                      {client.name}
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs text-gray-600 group-hover:text-gray-400 transition-colors">
                   {project.taskCount}
                 </span>

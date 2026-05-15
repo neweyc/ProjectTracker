@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as Dialog from '@radix-ui/react-dialog'
-import { X, Settings, CreditCard, LayoutGrid } from 'lucide-react'
+import { X, Settings, CreditCard, LayoutGrid, Users } from 'lucide-react'
 import { useSettings, useUpdateSettings } from '@/hooks/useSettings'
 import { BillingSettings } from './BillingSettings'
+import { ClientManager } from './ClientManager'
 
 interface Props {
   open: boolean
@@ -17,7 +18,7 @@ interface FormData {
   nextInvoiceSequence: number
 }
 
-type Tab = 'general' | 'billing'
+type Tab = 'general' | 'clients' | 'billing'
 
 export function SettingsModal({ open, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('general')
@@ -49,7 +50,7 @@ export function SettingsModal({ open, onClose }: Props) {
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg focus:outline-none">
+        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl focus:outline-none">
           <AnimatePresence mode="wait">
             {open && (
               <motion.div
@@ -72,12 +73,12 @@ export function SettingsModal({ open, onClose }: Props) {
                   </button>
                 </div>
 
-                <div className="flex">
+                <div className="flex h-[480px]">
                   {/* Tabs Sidebar */}
-                  <div className="w-40 border-r border-[#1f2937] p-2 space-y-1">
+                  <div className="w-44 border-r border-[#1f2937] p-2 space-y-1">
                     <button
                       onClick={() => setActiveTab('general')}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         activeTab === 'general' 
                           ? 'bg-violet-600/10 text-violet-400' 
                           : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -87,8 +88,19 @@ export function SettingsModal({ open, onClose }: Props) {
                       General
                     </button>
                     <button
+                      onClick={() => setActiveTab('clients')}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === 'clients' 
+                          ? 'bg-violet-600/10 text-violet-400' 
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Users className="w-4 h-4" />
+                      Clients
+                    </button>
+                    <button
                       onClick={() => setActiveTab('billing')}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         activeTab === 'billing' 
                           ? 'bg-violet-600/10 text-violet-400' 
                           : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -100,11 +112,11 @@ export function SettingsModal({ open, onClose }: Props) {
                   </div>
 
                   {/* Tab Content */}
-                  <div className="flex-1 p-6">
-                    {activeTab === 'general' ? (
+                  <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                    {activeTab === 'general' && (
                       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div>
-                          <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
                             Company Name
                           </label>
                           <input
@@ -115,7 +127,7 @@ export function SettingsModal({ open, onClose }: Props) {
                         </div>
 
                         <div>
-                          <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
                             Company Address
                           </label>
                           <textarea
@@ -127,7 +139,7 @@ export function SettingsModal({ open, onClose }: Props) {
                         </div>
 
                         <div>
-                          <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
                             Next Invoice Sequence
                           </label>
                           <input
@@ -145,15 +157,16 @@ export function SettingsModal({ open, onClose }: Props) {
                           <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full px-4 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-900/20"
                           >
                             {isSubmitting ? 'Saving...' : 'Save Settings'}
                           </button>
                         </div>
                       </form>
-                    ) : (
-                      <BillingSettings />
                     )}
+
+                    {activeTab === 'clients' && <ClientManager />}
+                    {activeTab === 'billing' && <BillingSettings />}
                   </div>
                 </div>
               </motion.div>

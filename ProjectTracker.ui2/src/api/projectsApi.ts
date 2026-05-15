@@ -1,8 +1,8 @@
 import { apiClient } from './client'
 import type { Project } from '@/types'
 
-export interface CreateProjectInput { name: string; description?: string }
-export interface UpdateProjectInput { name: string; description?: string }
+export interface CreateProjectInput { name: string; description?: string; clientId?: number | null }
+export interface UpdateProjectInput { name: string; description?: string; clientId?: number | null }
 
 export const projectsApi = {
   getAll: () =>

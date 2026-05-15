@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as Dialog from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
+import { X, Users } from 'lucide-react'
 import { useCreateProject } from '@/hooks/useProjects'
+import { useClients } from '@/hooks/useClients'
 
 interface Props {
   open: boolean
@@ -13,11 +14,13 @@ interface Props {
 interface FormData {
   name: string
   description: string
+  clientId: string // use string for select value
 }
 
 export function CreateProjectModal({ open, onClose }: Props) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const createProject = useCreateProject()
+  const { data: clients = [] } = useClients()
 
   useEffect(() => {
     if (!open) reset()
@@ -27,6 +30,7 @@ export function CreateProjectModal({ open, onClose }: Props) {
     await createProject.mutateAsync({
       name: data.name,
       description: data.description || undefined,
+      clientId: data.clientId ? Number(data.clientId) : null
     })
     onClose()
   }
@@ -74,6 +78,26 @@ export function CreateProjectModal({ open, onClose }: Props) {
 
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                      Client <span className="text-gray-600">(optional)</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        {...register('clientId')}
+                        className="w-full bg-[#0b0f19] border border-[#374151] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 transition-colors appearance-none"
+                      >
+                        <option value="">No Client</option>
+                        {clients.map(client => (
+                          <option key={client.id} value={client.id}>{client.name}</option>
+                        ))}
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                        <Users className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1.5">
                       Description <span className="text-gray-600">(optional)</span>
                     </label>
                     <textarea
@@ -95,7 +119,7 @@ export function CreateProjectModal({ open, onClose }: Props) {
                     <button
                       type="submit"
                       disabled={createProject.isPending}
-                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-900/20"
                     >
                       {createProject.isPending ? 'Creating...' : 'Create Project'}
                     </button>
