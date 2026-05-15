@@ -6,6 +6,7 @@ import { X, Settings, CreditCard, LayoutGrid, Users } from 'lucide-react'
 import { useSettings, useUpdateSettings } from '@/hooks/useSettings'
 import { BillingSettings } from './BillingSettings'
 import { ClientManager } from './ClientManager'
+import { TeamManager } from './TeamManager'
 
 interface Props {
   open: boolean
@@ -18,7 +19,7 @@ interface FormData {
   nextInvoiceSequence: number
 }
 
-type Tab = 'general' | 'clients' | 'billing'
+type Tab = 'general' | 'clients' | 'team' | 'billing'
 
 export function SettingsModal({ open, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('general')
@@ -99,6 +100,17 @@ export function SettingsModal({ open, onClose }: Props) {
                       Clients
                     </button>
                     <button
+                      onClick={() => setActiveTab('team')}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === 'team' 
+                          ? 'bg-violet-600/10 text-violet-400' 
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Users className="w-4 h-4" />
+                      Team
+                    </button>
+                    <button
                       onClick={() => setActiveTab('billing')}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         activeTab === 'billing' 
@@ -166,6 +178,7 @@ export function SettingsModal({ open, onClose }: Props) {
                     )}
 
                     {activeTab === 'clients' && <ClientManager />}
+                    {activeTab === 'team' && <TeamManager />}
                     {activeTab === 'billing' && <BillingSettings />}
                   </div>
                 </div>

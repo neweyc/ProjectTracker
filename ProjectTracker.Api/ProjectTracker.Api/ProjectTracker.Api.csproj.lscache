@@ -105,7 +105,9 @@ Features/
  Settings/
   GetSettings/GetSettingsFeature.cs
   UpdateSettings/UpdateSettingsFeature.cs
-  Users/AddUserFeature.cs
+  Users/
+   AddUserFeature.cs
+   GetUsersFeature.cs
  Tasks/
   CreateTask/CreateTaskFeature.cs
   DeleteTask/DeleteTaskFeature.cs
