@@ -1,34 +1,23 @@
 services:
-  db:
-    image: neweyc/olive-db:latest
-    platform: linux/amd64
-    environment:
-      POSTGRES_DB: projecttracker
-      POSTGRES_USER: db_user
-      POSTGRES_PASSWORD: D^hjyt$%gvv#76h
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U db_user -d projecttracker"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   api:
     image: neweyc/olive-api:latest
     platform: linux/amd64
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=projecttracker;Username=db_user;Password=D^hjyt$%gvv#76h"
-    depends_on:
-      db:
-        condition: service_healthy
+      ConnectionStrings__DefaultConnection: "${DB_CONNECTION_STRING}"
+      Stripe__SecretKey: "${STRIPE_SECRET_KEY}"
+      Stripe__PriceId: "${STRIPE_PRICE_ID}"
+      Stripe__WebhookSecret: "${STRIPE_WEBHOOK_SECRET}"
 
   ui:
     image: neweyc/olive-ui:latest
     platform: linux/amd64
     depends_on:
       - api
+
+  craytech-ui:
+    image: neweyc/craytech.ui:latest
+    platform: linux/amd64
 
   caddy:
     image: caddy:latest
@@ -44,8 +33,8 @@ services:
     depends_on:
       - ui
       - api
+      - craytech-ui
 
 volumes:
-  postgres_data:
   caddy_data:
   caddy_config:

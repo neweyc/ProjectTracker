@@ -14,9 +14,10 @@ interface RegisterForm {
 
 interface Props {
   onLogin: () => void
+  onBackToHome: () => void
 }
 
-export function RegisterPage({ onLogin }: Props) {
+export function RegisterPage({ onLogin, onBackToHome }: Props) {
   const { register: registerAccount } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -45,12 +46,15 @@ export function RegisterPage({ onLogin }: Props) {
   return (
     <div className="min-h-screen bg-[#080c14] flex flex-col items-center justify-center px-4 py-10">
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-8">
+      <button 
+        onClick={onBackToHome}
+        className="flex items-center gap-3 mb-8 hover:opacity-80 transition-opacity"
+      >
         <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center shadow-lg shadow-violet-900/40">
           <Receipt className="w-5 h-5 text-white" />
         </div>
         <span className="text-xl font-semibold text-white tracking-tight">Olive Invoice</span>
-      </div>
+      </button>
 
       {/* Card */}
       <div className="w-full max-w-sm bg-[#0f1420] border border-[#1f2937] rounded-2xl p-8 shadow-2xl">

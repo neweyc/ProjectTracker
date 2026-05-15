@@ -3,9 +3,10 @@ import { Receipt } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
+import { LandingPage } from '@/pages/LandingPage'
 import { useAuth } from '@/contexts/AuthContext'
 
-type AuthView = 'login' | 'register'
+type AuthView = 'landing' | 'login' | 'register'
 
 function LoadingScreen() {
   return (
@@ -22,14 +23,23 @@ function LoadingScreen() {
 
 export default function App() {
   const { user, isLoading } = useAuth()
-  const [authView, setAuthView] = useState<AuthView>('login')
+  const [authView, setAuthView] = useState<AuthView>('landing')
 
   if (isLoading) return <LoadingScreen />
 
   if (!user) {
+    if (authView === 'landing') {
+      return (
+        <LandingPage 
+          onLogin={() => setAuthView('login')} 
+          onRegister={() => setAuthView('register')} 
+        />
+      )
+    }
+
     return authView === 'login'
-      ? <LoginPage onRegister={() => setAuthView('register')} />
-      : <RegisterPage onLogin={() => setAuthView('login')} />
+      ? <LoginPage onRegister={() => setAuthView('register')} onBackToHome={() => setAuthView('landing')} />
+      : <RegisterPage onLogin={() => setAuthView('login')} onBackToHome={() => setAuthView('landing')} />
   }
 
   return <AppShell />

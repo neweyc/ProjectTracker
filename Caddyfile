@@ -1,7 +1,14 @@
+craytech-solutions.com {
+    reverse_proxy craytech-ui:80
+
+    log {
+        output file /var/log/caddy/craytech-access.log
+    }
+}
+
 oliveinvoice.com {
     # Reverse proxy for the API
     handle /api/* {
-        uri strip_prefix /api
         reverse_proxy api:8080
     }
 
