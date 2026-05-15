@@ -118,7 +118,7 @@ BEGIN
         ProjectId    INT            NOT NULL,
         ParentTaskId INT                NULL,
         Title        NVARCHAR(500)  NOT NULL,
-        Description  NVARCHAR(MAX)      NULL,
+        Description  NVARCHAR(4000)     NULL,
         Status       NVARCHAR(50)   NOT NULL,
         IsInvoiced   BIT            NOT NULL,
         CreatedAt    DATETIME2      NOT NULL,

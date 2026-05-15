@@ -14,7 +14,7 @@ namespace ProjectTracker.Api
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
 
             services.AddDbContext<ProjectTrackerDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseNpgsql(connectionString));
 
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUser>();

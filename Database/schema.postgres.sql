@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     project_id     INTEGER      NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     parent_task_id INTEGER          NULL REFERENCES tasks (id) ON DELETE RESTRICT,
     title          VARCHAR(500) NOT NULL,
-    description    VARCHAR(5000)    NULL,
+    description    VARCHAR(4000)    NULL,
     status         VARCHAR(50)  NOT NULL,
     is_invoiced    BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMPTZ  NOT NULL
