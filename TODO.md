@@ -17,7 +17,8 @@ Update your `appsettings.json` or `appsettings.Development.json` with the keys f
 
 - [ ] **SecretKey:** `sk_test_...` (from Developers > API Keys).
 - [ ] **PublishableKey:** `pk_test_...` (from Developers > API Keys).
-- [ ] **PriceId:** `price_...` (from the Price you created in Step 1).
+- [ ] **SoloPriceId:** `price_...` (from the $9 Solo price you created).
+- [ ] **TeamPriceId:** `price_...` (from the $29 Team price you created).
 - [ ] **WebhookSecret:** `whsec_...` (from Developers > Webhooks - see Step 3).
 
 ## 3. Webhook Setup

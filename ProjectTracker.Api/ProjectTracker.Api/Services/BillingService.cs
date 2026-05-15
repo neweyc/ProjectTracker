@@ -11,13 +11,16 @@ namespace ProjectTracker.Api.Services
         IConfiguration configuration,
         ILogger<BillingService> logger) : IBillingService
     {
-        private readonly string _priceId = configuration["Stripe:PriceId"] ?? throw new InvalidOperationException("Stripe:PriceId is not configured.");
+        private readonly string _soloPriceId = configuration["Stripe:SoloPriceId"] ?? throw new InvalidOperationException("Stripe:SoloPriceId is not configured.");
+        private readonly string _teamPriceId = configuration["Stripe:TeamPriceId"] ?? throw new InvalidOperationException("Stripe:TeamPriceId is not configured.");
         private readonly string _webhookSecret = configuration["Stripe:WebhookSecret"] ?? throw new InvalidOperationException("Stripe:WebhookSecret is not configured.");
 
-        public async Task<string> CreateCheckoutSessionAsync(int tenantId, string successUrl, string cancelUrl)
+        public async Task<string> CreateCheckoutSessionAsync(int tenantId, string tier, string successUrl, string cancelUrl)
         {
             var tenant = await context.Tenants.FindAsync(tenantId)
                 ?? throw new InvalidOperationException("Tenant not found.");
+
+            var priceId = tier == "Team" ? _teamPriceId : _soloPriceId;
 
             var options = new Stripe.Checkout.SessionCreateOptions
             {
@@ -26,7 +29,7 @@ namespace ProjectTracker.Api.Services
                 [
                     new SessionLineItemOptions
                     {
-                        Price = _priceId,
+                        Price = priceId,
                         Quantity = 1,
                     },
                 ],
@@ -34,6 +37,10 @@ namespace ProjectTracker.Api.Services
                 SuccessUrl = successUrl,
                 CancelUrl = cancelUrl,
                 ClientReferenceId = tenantId.ToString(),
+                Metadata = new Dictionary<string, string>
+                {
+                    { "SubscriptionTier", tier }
+                }
             };
 
             if (!string.IsNullOrEmpty(tenant.StripeCustomerId))
@@ -120,11 +127,15 @@ namespace ProjectTracker.Api.Services
                 tenant.StripeSubscriptionId = session.SubscriptionId;
                 tenant.SubscriptionStatus = "active"; // Initial status
 
-                // Determine tier based on Price ID (placeholder logic)
-                // In a real scenario, you'd fetch the session line items or the subscription
-                // For now, let's assume if they paid, they are at least on "Solo"
-                // and if we had a specific Team price ID, we'd check for it here.
-                tenant.SubscriptionTier = "Solo"; 
+                if (session.Metadata.TryGetValue("SubscriptionTier", out var tier))
+                {
+                    tenant.SubscriptionTier = tier;
+                }
+                else
+                {
+                    // Fallback just in case
+                    tenant.SubscriptionTier = "Solo"; 
+                }
 
                 await context.SaveChangesAsync();
             }

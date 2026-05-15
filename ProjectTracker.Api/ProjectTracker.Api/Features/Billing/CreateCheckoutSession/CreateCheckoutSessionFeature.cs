@@ -22,6 +22,7 @@ namespace ProjectTracker.Api.Features.Billing.CreateCheckoutSession
             {
                 var url = await billingService.CreateCheckoutSessionAsync(
                     currentUser.TenantId,
+                    request.Tier,
                     request.SuccessUrl,
                     request.CancelUrl);
 
@@ -34,5 +35,5 @@ namespace ProjectTracker.Api.Features.Billing.CreateCheckoutSession
         }
     }
 
-    public record CreateCheckoutSessionRequest(string SuccessUrl, string CancelUrl);
+    public record CreateCheckoutSessionRequest(string Tier, string SuccessUrl, string CancelUrl);
 }

@@ -1,8 +1,9 @@
 import { apiClient } from "./client";
 
 export const billingApi = {
-  createCheckoutSession: (successUrl: string, cancelUrl: string) =>
+  createCheckoutSession: (tier: string, successUrl: string, cancelUrl: string) =>
     apiClient.post<{ url: string }>("/api/billing/checkout", {
+      tier,
       successUrl,
       cancelUrl,
     }),

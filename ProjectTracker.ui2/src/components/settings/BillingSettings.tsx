@@ -1,108 +1,165 @@
 import React from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { billingApi } from '../../api/billingApi'
-import { CreditCard, ExternalLink, ShieldCheck, AlertCircle } from 'lucide-react'
+import { CreditCard, ExternalLink, ShieldCheck, Star, Users, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 
 export const BillingSettings: React.FC = () => {
   const { user } = useAuth()
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState<string | null>(null)
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (tier: string) => {
     try {
-      setLoading(true)
-      const successUrl = window.location.origin + '/settings?billing=success'
-      const cancelUrl = window.location.origin + '/settings?billing=cancel'
-      const { url } = await billingApi.createCheckoutSession(successUrl, cancelUrl)
+      setLoading(tier)
+      const successUrl = window.location.origin + '/?billing=success'
+      const cancelUrl = window.location.origin + '/?billing=cancel'
+      const { url } = await billingApi.createCheckoutSession(tier, successUrl, cancelUrl)
       window.location.href = url
     } catch (err) {
       toast.error('Failed to start checkout. Please try again.')
       console.error(err)
     } finally {
-      setLoading(false)
+      setLoading(null)
     }
   }
 
   const handleManageBilling = async () => {
     try {
-      setLoading(true)
-      const returnUrl = window.location.origin + '/settings'
+      setLoading('portal')
+      const returnUrl = window.location.origin
       const { url } = await billingApi.createPortalSession(returnUrl)
       window.location.href = url
     } catch (err) {
       toast.error('Failed to open billing portal. Please try again.')
       console.error(err)
     } finally {
-      setLoading(false)
+      setLoading(null)
     }
   }
 
   const isActive = user?.subscriptionStatus === 'active'
+  const currentTier = user?.subscriptionTier || 'Free'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-medium text-slate-900 dark:text-white">Subscription & Billing</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <h3 className="text-lg font-medium text-white">Subscription & Billing</h3>
+        <p className="text-sm text-gray-500">
           Manage your plan and billing information.
         </p>
       </div>
 
-      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex items-start justify-between">
+      {/* Current Status Card */}
+      <div className="bg-[#0b0f19] rounded-2xl border border-[#1f2937] p-6 overflow-hidden relative group">
+        <div className="flex items-start justify-between relative z-10">
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-lg ${isActive ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'}`}>
+            <div className={`p-3 rounded-xl ${isActive ? 'bg-violet-600/20 text-violet-400 border border-violet-500/20' : 'bg-gray-800 text-gray-500 border border-gray-700'}`}>
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Current Plan</p>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-white">
-                {isActive ? 'Olive Invoices Pro' : 'Free Plan'}
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Current Plan</p>
+              <h4 className="text-xl font-bold text-white">
+                {isActive ? `Olive ${currentTier}` : 'Free Plan'}
               </h4>
             </div>
           </div>
           <div className="text-right">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
               isActive 
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' 
-                : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                : 'bg-gray-800 text-gray-500 border-gray-700'
             }`}>
               {isActive ? 'Active' : 'No Subscription'}
             </span>
           </div>
         </div>
 
-        {!isActive && (
-          <div className="mt-6 flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-            <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              Upgrade to Pro to unlock advanced invoicing features, priority support, and team collaboration.
-            </p>
-          </div>
-        )}
-
-        <div className="mt-8 flex gap-3">
-          {isActive ? (
+        {isActive && (
+          <div className="mt-8 flex gap-3 relative z-10">
             <button
               onClick={handleManageBilling}
-              disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              disabled={!!loading}
+              className="flex items-center gap-2 px-4 py-2 bg-white text-violet-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition-all disabled:opacity-50 shadow-lg shadow-black/20"
             >
-              <CreditCard className="w-4 h-4" />
-              Manage Billing
-              <ExternalLink className="w-3 h-3 ml-1" />
+              {loading === 'portal' ? <Zap className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+              Manage Billing & Invoices
+              <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
             </button>
-          ) : (
-            <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/20"
-            >
-              Upgrade to Pro
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Pricing Tiers if not active */}
+      {!isActive && (
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Solo Tier */}
+          <div className="p-6 rounded-2xl border border-[#1f2937] bg-[#0b0f19] flex flex-col h-full">
+            <div className="mb-6">
+              <h4 className="font-bold text-white text-lg">Solo</h4>
+              <div className="flex items-baseline gap-1 mt-1">
+                <span className="text-2xl font-bold text-white">$9</span>
+                <span className="text-gray-500 text-xs">/ month</span>
+              </div>
+            </div>
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-center gap-2 text-xs text-gray-400">
+                <Star className="w-3 h-3 text-violet-400 fill-violet-400" />
+                Unlimited clients & invoices
+              </li>
+              <li className="flex items-center gap-2 text-xs text-gray-400">
+                <Star className="w-3 h-3 text-violet-400 fill-violet-400" />
+                Full Kanban board
+              </li>
+              <li className="flex items-center gap-2 text-xs text-gray-400">
+                <Star className="w-3 h-3 text-violet-400 fill-violet-400" />
+                PDF Exports
+              </li>
+            </ul>
+            <button
+              onClick={() => handleSubscribe('Solo')}
+              disabled={!!loading}
+              className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-all"
+            >
+              {loading === 'Solo' ? 'Redirecting...' : 'Upgrade to Solo'}
+            </button>
+          </div>
+
+          {/* Team Tier */}
+          <div className="p-6 rounded-2xl border border-violet-500/30 bg-violet-600/5 flex flex-col h-full relative overflow-hidden">
+            <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-violet-600 text-[8px] font-bold uppercase tracking-wider text-white">
+              Recommended
+            </div>
+            <div className="mb-6">
+              <h4 className="font-bold text-white text-lg">Team</h4>
+              <div className="flex items-baseline gap-1 mt-1">
+                <span className="text-2xl font-bold text-white">$29</span>
+                <span className="text-gray-400 text-xs">/ month</span>
+              </div>
+            </div>
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-center gap-2 text-xs text-violet-200">
+                <Users className="w-3 h-3" />
+                Up to 5 team members
+              </li>
+              <li className="flex items-center gap-2 text-xs text-violet-200">
+                <Users className="w-3 h-3" />
+                Shared boards & collaboration
+              </li>
+              <li className="flex items-center gap-2 text-xs text-violet-200">
+                <Users className="w-3 h-3" />
+                Integrated payments
+              </li>
+            </ul>
+            <button
+              onClick={() => handleSubscribe('Team')}
+              disabled={!!loading}
+              className="w-full py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-all shadow-lg shadow-violet-900/20"
+            >
+              {loading === 'Team' ? 'Redirecting...' : 'Get Started with Team'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
