@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjectTracker.Api.Data;
 using ProjectTracker.Api.Routing;
 using ProjectTracker.Api.Services;
+using Stripe;
 
 namespace ProjectTracker.Api
 {
@@ -24,7 +25,10 @@ namespace ProjectTracker.Api
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<ITimeEntryService, TimeEntryService>();
             services.AddScoped<ISettingsService, SettingsService>();
-            services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IInvoiceService, ProjectTracker.Api.Services.InvoiceService>();
+            services.AddScoped<IBillingService, ProjectTracker.Api.Services.BillingService>();
+
+            StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>

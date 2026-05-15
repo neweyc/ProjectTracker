@@ -18,10 +18,13 @@ IF OBJECT_ID(N'dbo.Tenants', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Tenants
     (
-        Id        INT           NOT NULL IDENTITY(1,1),
-        Name      NVARCHAR(200) NOT NULL,
-        Slug      NVARCHAR(100) NOT NULL,
-        CreatedAt DATETIME2     NOT NULL,
+        Id                   INT           NOT NULL IDENTITY(1,1),
+        Name                 NVARCHAR(200) NOT NULL,
+        Slug                 NVARCHAR(100) NOT NULL,
+        CreatedAt            DATETIME2     NOT NULL,
+        StripeCustomerId     NVARCHAR(100)     NULL,
+        StripeSubscriptionId NVARCHAR(100)     NULL,
+        SubscriptionStatus   NVARCHAR(50)      NULL,
 
         CONSTRAINT PK_Tenants PRIMARY KEY (Id)
     );

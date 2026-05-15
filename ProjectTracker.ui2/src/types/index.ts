@@ -3,6 +3,7 @@ export interface User {
   tenantId: number
   email: string
   displayName: string
+  subscriptionStatus?: string | null
 }
 
 export type TaskStatus = 'Created' | 'InProgress' | 'Complete'

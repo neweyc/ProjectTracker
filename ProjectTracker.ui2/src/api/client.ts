@@ -1,11 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5260";
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 
 class ApiError extends Error {
+  public status: number;
   constructor(
-    public status: number,
+    status: number,
     message: string,
   ) {
     super(message);
+    this.status = status;
     this.name = "ApiError";
   }
 }

@@ -14,10 +14,13 @@
 -- Tenants
 -- ============================================================
 CREATE TABLE IF NOT EXISTS tenants (
-    id         INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name       VARCHAR(200) NOT NULL,
-    slug       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMPTZ  NOT NULL
+    id                     INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name                   VARCHAR(200) NOT NULL,
+    slug                   VARCHAR(100) NOT NULL,
+    created_at             TIMESTAMPTZ  NOT NULL,
+    stripe_customer_id     VARCHAR(100)     NULL,
+    stripe_subscription_id VARCHAR(100)     NULL,
+    subscription_status    VARCHAR(50)      NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_tenants_slug ON tenants (slug);

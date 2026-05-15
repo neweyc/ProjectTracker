@@ -1,30 +1,51 @@
 services:
   db:
-    build: ./Database
+    image: neweyc/olive-db:latest
+    platform: linux/amd64
     environment:
       POSTGRES_DB: projecttracker
-      POSTGRES_USER: app_user
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: D^hjyt$%gvv#76h
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app_user -d projecttracker"]
+      test: ["CMD-SHELL", "pg_isready -U db_user -d projecttracker"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   api:
-    build: ./ProjectTracker.Api
+    image: neweyc/olive-api:latest
+    platform: linux/amd64
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=projecttracker;Username=app_user;Password=changeme"
-    ports:
-      - "5260:8080"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=projecttracker;Username=db_user;Password=D^hjyt$%gvv#76h"
     depends_on:
       db:
         condition: service_healthy
 
+  ui:
+    image: neweyc/olive-ui:latest
+    platform: linux/amd64
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - ui
+      - api
+
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:

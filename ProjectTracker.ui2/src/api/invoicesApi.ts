@@ -35,5 +35,5 @@ export const invoicesApi = {
     apiClient.put<void>(`/api/projects/${projectId}/invoices/${invoiceId}`, data),
 
   delete: (projectId: number, invoiceId: number) =>
-    apiClient.delete<void>(`/api/projects/${projectId}/invoices/${invoiceId}`),
+    apiClient.delete(`/api/projects/${projectId}/invoices/${invoiceId}`),
 }

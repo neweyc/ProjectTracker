@@ -22,6 +22,9 @@ namespace ProjectTracker.Api.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Slug).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.StripeCustomerId).HasMaxLength(100);
+                entity.Property(e => e.StripeSubscriptionId).HasMaxLength(100);
+                entity.Property(e => e.SubscriptionStatus).HasMaxLength(50);
                 entity.HasIndex(e => e.Slug).IsUnique();
             });
 

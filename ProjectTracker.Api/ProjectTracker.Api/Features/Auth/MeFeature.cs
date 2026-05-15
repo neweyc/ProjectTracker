@@ -13,7 +13,15 @@ namespace ProjectTracker.Api.Features.Auth
                 .RequireAuthorization();
         }
 
-        private static IResult Handle(ICurrentUser currentUser)
-            => Results.Ok(new AuthResponse(currentUser.UserId, currentUser.TenantId, currentUser.Email, currentUser.DisplayName));
+        private static async Task<IResult> Handle(ICurrentUser currentUser, IBillingService billingService)
+        {
+            var status = await billingService.GetSubscriptionStatusAsync(currentUser.TenantId);
+            return Results.Ok(new AuthResponse(
+                currentUser.UserId,
+                currentUser.TenantId,
+                currentUser.Email,
+                currentUser.DisplayName,
+                status));
+        }
     }
 }
