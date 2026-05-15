@@ -6,5 +6,6 @@ namespace ProjectTracker.Api.Services
         Task<string> CreatePortalSessionAsync(int tenantId, string returnUrl);
         Task HandleWebhookAsync(string json, string signatureHeader);
         Task<string?> GetSubscriptionStatusAsync(int tenantId);
+        Task<string> GetSubscriptionTierAsync(int tenantId);
     }
 }

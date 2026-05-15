@@ -17,10 +17,10 @@ namespace ProjectTracker.Api.Features.Projects.GetProjects
         {
             var projects = await projectService.GetAllAsync(currentUser.TenantId);
             var response = projects.Select(p => new GetProjectsResponse(
-                p.Id, p.Name, p.Description, p.CreatedAt, p.TaskCount));
+                p.Id, p.Name, p.Description, p.CreatedAt, p.TaskCount, p.ClientId));
             return Results.Ok(response);
         }
     }
 
-    public record GetProjectsResponse(int Id, string Name, string? Description, DateTime CreatedAt, int TaskCount);
+    public record GetProjectsResponse(int Id, string Name, string? Description, DateTime CreatedAt, int TaskCount, int? ClientId);
 }

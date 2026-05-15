@@ -9,6 +9,9 @@ namespace ProjectTracker.Api.Data.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Tenant Tenant { get; set; } = null!;
+        public int? ClientId { get; set; }
+        public Client? Client { get; set; }
+
         public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
     }

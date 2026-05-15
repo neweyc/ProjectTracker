@@ -18,13 +18,13 @@ namespace ProjectTracker.Api.Features.Projects.UpdateProject
             if (string.IsNullOrWhiteSpace(request.Name))
                 return Results.BadRequest("Name is required.");
 
-            var project = await projectService.UpdateAsync(id, request.Name.Trim(), request.Description?.Trim(), currentUser.TenantId);
+            var project = await projectService.UpdateWithClientAsync(id, request.Name.Trim(), request.Description?.Trim(), request.ClientId, currentUser.TenantId);
             if (project is null) return Results.NotFound();
 
-            return Results.Ok(new UpdateProjectResponse(project.Id, project.Name, project.Description, project.CreatedAt));
+            return Results.Ok(new UpdateProjectResponse(project.Id, project.Name, project.Description, project.ClientId, project.CreatedAt));
         }
     }
 
-    public record UpdateProjectRequest(string Name, string? Description);
-    public record UpdateProjectResponse(int Id, string Name, string? Description, DateTime CreatedAt);
+    public record UpdateProjectRequest(string Name, string? Description, int? ClientId);
+    public record UpdateProjectResponse(int Id, string Name, string? Description, int? ClientId, DateTime CreatedAt);
 }

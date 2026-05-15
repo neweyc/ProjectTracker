@@ -56,6 +56,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 Data/Entities/
+ Client.cs
  ExternalLogin.cs
  Invoice.cs
  InvoiceLineItem.cs
@@ -71,6 +72,10 @@ Data/Migrations/
  20260504000000_InitialCreate.cs
  20260515171651_AddStripeToTenant.cs
  20260515171651_AddStripeToTenant.Designer.cs
+ 20260515232548_AddSubscriptionTierToTenant.cs
+ 20260515232548_AddSubscriptionTierToTenant.Designer.cs
+ 20260515233350_AddClientsTable.cs
+ 20260515233350_AddClientsTable.Designer.cs
  ProjectTrackerDbContextModelSnapshot.cs
 Data/ProjectTrackerDbContext.cs
 Features/Auth/
@@ -84,6 +89,7 @@ Features/Billing/
  CreatePortalSession/CreatePortalSessionFeature.cs
  Webhook/StripeWebhookFeature.cs
 Features/
+ Clients/ClientEndpoints.cs
  CorrectiveActions/CreateCorrectiveActionsFeature.cs
  Invoices/
   CreateInvoice/CreateInvoiceFeature.cs
@@ -99,6 +105,7 @@ Features/
  Settings/
   GetSettings/GetSettingsFeature.cs
   UpdateSettings/UpdateSettingsFeature.cs
+  Users/AddUserFeature.cs
  Tasks/
   CreateTask/CreateTaskFeature.cs
   DeleteTask/DeleteTaskFeature.cs
@@ -119,8 +126,10 @@ Program.cs
 Routing/IEndpoint.cs
 Services/
  BillingService.cs
+ ClientService.cs
  IAuthService.cs
  IBillingService.cs
+ IClientService.cs
  ICurrentUser.cs
  IInvoiceService.cs
  InvoiceService.cs

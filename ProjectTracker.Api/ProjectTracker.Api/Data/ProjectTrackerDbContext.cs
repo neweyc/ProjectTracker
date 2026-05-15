@@ -8,6 +8,7 @@ namespace ProjectTracker.Api.Data
         public DbSet<Tenant> Tenants => Set<Tenant>();
         public DbSet<User> Users => Set<User>();
         public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
+        public DbSet<Client> Clients => Set<Client>();
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<ProjectTask> Tasks => Set<ProjectTask>();
         public DbSet<TimeEntry> TimeEntries => Set<TimeEntry>();
@@ -25,6 +26,7 @@ namespace ProjectTracker.Api.Data
                 entity.Property(e => e.StripeCustomerId).HasMaxLength(100);
                 entity.Property(e => e.StripeSubscriptionId).HasMaxLength(100);
                 entity.Property(e => e.SubscriptionStatus).HasMaxLength(50);
+                entity.Property(e => e.SubscriptionTier).IsRequired().HasMaxLength(50).HasDefaultValue("Free");
                 entity.HasIndex(e => e.Slug).IsUnique();
             });
 
@@ -55,6 +57,19 @@ namespace ProjectTracker.Api.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<Client>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Email).HasMaxLength(256);
+                entity.Property(e => e.Address).HasMaxLength(1000);
+
+                entity.HasOne(e => e.Tenant)
+                    .WithMany()
+                    .HasForeignKey(e => e.TenantId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<Project>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -65,6 +80,11 @@ namespace ProjectTracker.Api.Data
                     .WithMany(e => e.Projects)
                     .HasForeignKey(e => e.TenantId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Client)
+                    .WithMany(e => e.Projects)
+                    .HasForeignKey(e => e.ClientId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<ProjectTask>(entity =>

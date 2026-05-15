@@ -21,5 +21,5 @@ namespace ProjectTracker.Api.Features.Auth
         }
     }
 
-    public record AuthResponse(int UserId, int TenantId, string Email, string DisplayName, string? SubscriptionStatus = null);
+    public record AuthResponse(int UserId, int TenantId, string Email, string DisplayName, string? SubscriptionStatus = null, string? SubscriptionTier = "Free");
 }

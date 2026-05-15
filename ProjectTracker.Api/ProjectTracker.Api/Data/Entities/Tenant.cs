@@ -10,6 +10,7 @@ namespace ProjectTracker.Api.Data.Entities
         public string? StripeCustomerId { get; set; }
         public string? StripeSubscriptionId { get; set; }
         public string? SubscriptionStatus { get; set; }
+        public string SubscriptionTier { get; set; } = "Free";
 
         public ICollection<User> Users { get; set; } = new List<User>();
         public ICollection<Project> Projects { get; set; } = new List<Project>();

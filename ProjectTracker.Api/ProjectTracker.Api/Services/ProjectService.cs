@@ -12,7 +12,8 @@ namespace ProjectTracker.Api.Services
                 .AsNoTracking()
                 .Select(p => new ProjectListItem(
                     p.Id, p.Name, p.Description, p.CreatedAt,
-                    p.Tasks.Count(t => t.ParentTaskId == null)))
+                    p.Tasks.Count(t => t.ParentTaskId == null),
+                    p.ClientId))
                 .ToListAsync();
 
         public async Task<Project?> GetByIdAsync(int id, int tenantId)
@@ -31,12 +32,38 @@ namespace ProjectTracker.Api.Services
             return project;
         }
 
+        public async Task<Project> CreateWithClientAsync(string name, string? description, int? clientId, int tenantId)
+        {
+            var project = new Project 
+            { 
+                TenantId = tenantId, 
+                Name = name, 
+                Description = description, 
+                ClientId = clientId,
+                CreatedAt = DateTime.UtcNow 
+            };
+            context.Projects.Add(project);
+            await context.SaveChangesAsync();
+            return project;
+        }
+
         public async Task<Project?> UpdateAsync(int id, string name, string? description, int tenantId)
         {
             var project = await context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.TenantId == tenantId);
             if (project is null) return null;
             project.Name = name;
             project.Description = description;
+            await context.SaveChangesAsync();
+            return project;
+        }
+
+        public async Task<Project?> UpdateWithClientAsync(int id, string name, string? description, int? clientId, int tenantId)
+        {
+            var project = await context.Projects.FirstOrDefaultAsync(p => p.Id == id && p.TenantId == tenantId);
+            if (project is null) return null;
+            project.Name = name;
+            project.Description = description;
+            project.ClientId = clientId;
             await context.SaveChangesAsync();
             return project;
         }

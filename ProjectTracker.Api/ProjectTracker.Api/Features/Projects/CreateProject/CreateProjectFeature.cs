@@ -18,12 +18,12 @@ namespace ProjectTracker.Api.Features.Projects.CreateProject
             if (string.IsNullOrWhiteSpace(request.Name))
                 return Results.BadRequest("Name is required.");
 
-            var project = await projectService.CreateAsync(request.Name.Trim(), request.Description?.Trim(), currentUser.TenantId);
-            var response = new CreateProjectResponse(project.Id, project.Name, project.Description, project.CreatedAt);
+            var project = await projectService.CreateWithClientAsync(request.Name.Trim(), request.Description?.Trim(), request.ClientId, currentUser.TenantId);
+            var response = new CreateProjectResponse(project.Id, project.Name, project.Description, project.ClientId, project.CreatedAt);
             return Results.Created($"/api/projects/{project.Id}", response);
         }
     }
 
-    public record CreateProjectRequest(string Name, string? Description);
-    public record CreateProjectResponse(int Id, string Name, string? Description, DateTime CreatedAt);
+    public record CreateProjectRequest(string Name, string? Description, int? ClientId);
+    public record CreateProjectResponse(int Id, string Name, string? Description, int? ClientId, DateTime CreatedAt);
 }

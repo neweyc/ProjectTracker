@@ -16,12 +16,14 @@ namespace ProjectTracker.Api.Features.Auth
         private static async Task<IResult> Handle(ICurrentUser currentUser, IBillingService billingService)
         {
             var status = await billingService.GetSubscriptionStatusAsync(currentUser.TenantId);
+            var tier = await billingService.GetSubscriptionTierAsync(currentUser.TenantId);
             return Results.Ok(new AuthResponse(
                 currentUser.UserId,
                 currentUser.TenantId,
                 currentUser.Email,
                 currentUser.DisplayName,
-                status));
+                status,
+                tier));
         }
     }
 }

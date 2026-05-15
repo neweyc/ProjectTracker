@@ -138,72 +138,80 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
+            {/* Solo Plan */}
             <div className="p-8 rounded-3xl bg-[#0f1420] border border-white/5 flex flex-col">
               <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-400 mb-2">Free Plan</h3>
+                <h3 className="text-lg font-bold text-gray-400 mb-2">Solo</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">$0</span>
-                  <span className="text-gray-500 text-sm">/ forever</span>
+                  <span className="text-4xl font-bold text-white">$9</span>
+                  <span className="text-gray-500 text-sm">/ month</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-10 flex-1">
                 <li className="flex items-center gap-3 text-sm text-gray-300">
                   <ShieldCheck className="w-4 h-4 text-violet-500" />
-                  Up to 3 active projects
+                  Unlimited clients & invoices
                 </li>
                 <li className="flex items-center gap-3 text-sm text-gray-300">
                   <ShieldCheck className="w-4 h-4 text-violet-500" />
-                  Basic time tracking
+                  Full Kanban/Task board
                 </li>
                 <li className="flex items-center gap-3 text-sm text-gray-300">
                   <ShieldCheck className="w-4 h-4 text-violet-500" />
-                  Standard invoices
+                  One-click PDF invoices
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <ShieldCheck className="w-4 h-4 text-violet-500" />
+                  Basic time reporting
                 </li>
               </ul>
               <button 
                 onClick={onRegister}
                 className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 font-bold transition-all"
               >
-                Get Started
+                Start Solo
               </button>
             </div>
 
-            {/* Pro Plan */}
-            <div className="p-8 rounded-3xl bg-violet-600 border border-violet-500 flex flex-col relative overflow-hidden">
+            {/* Team/Pro Plan */}
+            <div className="p-8 rounded-3xl bg-violet-600 border border-violet-500 flex flex-col relative overflow-hidden shadow-2xl shadow-violet-900/20">
               <div className="absolute top-4 right-4 bg-white/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-white">
-                Recommended
+                Best Value
               </div>
               <div className="mb-8">
-                <h3 className="text-lg font-bold text-violet-200 mb-2">Olive Invoices Pro</h3>
+                <h3 className="text-lg font-bold text-violet-100 mb-2">Team / Pro</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">$19</span>
+                  <span className="text-4xl font-bold text-white">$29</span>
                   <span className="text-violet-200 text-sm">/ month</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-10 flex-1">
                 <li className="flex items-center gap-3 text-sm text-white">
                   <Star className="w-4 h-4 fill-white" />
-                  Unlimited projects
+                  Up to 5 team members
                 </li>
                 <li className="flex items-center gap-3 text-sm text-white">
                   <Star className="w-4 h-4 fill-white" />
-                  Custom company branding
+                  Shared boards & collaboration
                 </li>
                 <li className="flex items-center gap-3 text-sm text-white">
                   <Star className="w-4 h-4 fill-white" />
-                  Stripe Customer Portal
+                  Roles & permissions
                 </li>
                 <li className="flex items-center gap-3 text-sm text-white">
                   <Star className="w-4 h-4 fill-white" />
-                  Advanced reporting (Coming soon)
+                  Team-wide activity history
+                </li>
+                <li className="flex items-center gap-3 text-sm text-white">
+                  <Star className="w-4 h-4 fill-white" />
+                  Integrated Stripe payments
                 </li>
               </ul>
               <button 
                 onClick={onRegister}
                 className="w-full py-3 rounded-xl bg-white text-violet-600 font-bold hover:bg-gray-100 transition-all shadow-xl shadow-black/20"
               >
-                Upgrade to Pro
+                Get Started with Team
               </button>
             </div>
           </div>

@@ -75,6 +75,14 @@ namespace ProjectTracker.Api.Services
             return tenant?.SubscriptionStatus;
         }
 
+        public async Task<string> GetSubscriptionTierAsync(int tenantId)
+        {
+            var tenant = await context.Tenants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == tenantId);
+            return tenant?.SubscriptionTier ?? "Free";
+        }
+
         public async Task HandleWebhookAsync(string json, string signatureHeader)
         {
             try
@@ -111,6 +119,13 @@ namespace ProjectTracker.Api.Services
                 tenant.StripeCustomerId = session.CustomerId;
                 tenant.StripeSubscriptionId = session.SubscriptionId;
                 tenant.SubscriptionStatus = "active"; // Initial status
+
+                // Determine tier based on Price ID (placeholder logic)
+                // In a real scenario, you'd fetch the session line items or the subscription
+                // For now, let's assume if they paid, they are at least on "Solo"
+                // and if we had a specific Team price ID, we'd check for it here.
+                tenant.SubscriptionTier = "Solo"; 
+
                 await context.SaveChangesAsync();
             }
         }

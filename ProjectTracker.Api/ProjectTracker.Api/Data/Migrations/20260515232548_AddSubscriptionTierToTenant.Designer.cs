@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProjectTracker.Api.Data;
@@ -11,9 +12,11 @@ using ProjectTracker.Api.Data;
 namespace ProjectTracker.Api.Data.Migrations
 {
     [DbContext(typeof(ProjectTrackerDbContext))]
-    partial class ProjectTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260515232548_AddSubscriptionTierToTenant")]
+    partial class AddSubscriptionTierToTenant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,40 +24,6 @@ namespace ProjectTracker.Api.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("ProjectTracker.Api.Data.Entities.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Clients");
-                });
 
             modelBuilder.Entity("ProjectTracker.Api.Data.Entities.ExternalLogin", b =>
                 {
@@ -183,9 +152,6 @@ namespace ProjectTracker.Api.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -202,8 +168,6 @@ namespace ProjectTracker.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
 
                     b.HasIndex("TenantId");
 
@@ -397,17 +361,6 @@ namespace ProjectTracker.Api.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ProjectTracker.Api.Data.Entities.Client", b =>
-                {
-                    b.HasOne("ProjectTracker.Api.Data.Entities.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
-                });
-
             modelBuilder.Entity("ProjectTracker.Api.Data.Entities.ExternalLogin", b =>
                 {
                     b.HasOne("ProjectTracker.Api.Data.Entities.User", "User")
@@ -451,18 +404,11 @@ namespace ProjectTracker.Api.Data.Migrations
 
             modelBuilder.Entity("ProjectTracker.Api.Data.Entities.Project", b =>
                 {
-                    b.HasOne("ProjectTracker.Api.Data.Entities.Client", "Client")
-                        .WithMany("Projects")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("ProjectTracker.Api.Data.Entities.Tenant", "Tenant")
                         .WithMany("Projects")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Client");
 
                     b.Navigation("Tenant");
                 });
@@ -516,11 +462,6 @@ namespace ProjectTracker.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("ProjectTracker.Api.Data.Entities.Client", b =>
-                {
-                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("ProjectTracker.Api.Data.Entities.Invoice", b =>

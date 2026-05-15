@@ -14,6 +14,7 @@ namespace ProjectTracker.Api.Services
     {
         Task<(AuthResult? Result, string? Error)> RegisterAsync(RegisterInput input);
         Task<AuthResult?> LoginAsync(LoginInput input);
+        Task<(User? User, string? Error)> AddUserToTenantAsync(int tenantId, string email, string displayName, string password);
     }
 
     public class AuthService(ProjectTrackerDbContext context) : IAuthService
@@ -31,7 +32,13 @@ namespace ProjectTracker.Api.Services
             while (await context.Tenants.AnyAsync(t => t.Slug == candidate))
                 candidate = $"{slug}-{++i}";
 
-            var tenant = new Tenant { Name = input.TenantName.Trim(), Slug = candidate, CreatedAt = DateTime.UtcNow };
+            var tenant = new Tenant 
+            { 
+                Name = input.TenantName.Trim(), 
+                Slug = candidate, 
+                CreatedAt = DateTime.UtcNow,
+                SubscriptionTier = "Free" 
+            };
             context.Tenants.Add(tenant);
             await context.SaveChangesAsync();
 
@@ -47,6 +54,48 @@ namespace ProjectTracker.Api.Services
             await context.SaveChangesAsync();
 
             return (new AuthResult(user.Id, tenant.Id, user.Email, user.DisplayName), null);
+        }
+
+        public async Task<(User? User, string? Error)> AddUserToTenantAsync(int tenantId, string email, string displayName, string password)
+        {
+            var tenant = await context.Tenants
+                .Include(t => t.Users)
+                .FirstOrDefaultAsync(t => t.Id == tenantId);
+
+            if (tenant == null) return (null, "Tenant not found.");
+
+            var maxUsers = tenant.SubscriptionTier switch
+            {
+                "Team" => 5,
+                "Pro" => 5,
+                _ => 1
+            };
+
+            if (tenant.Users.Count >= maxUsers)
+            {
+                var message = tenant.SubscriptionTier == "Team" 
+                    ? "Team plan is limited to 5 users." 
+                    : "Solo and Free plans are limited to 1 user. Please upgrade to Team.";
+                return (null, message);
+            }
+
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            if (await context.Users.AnyAsync(u => u.Email == normalizedEmail))
+                return (null, "Email is already registered.");
+
+            var user = new User
+            {
+                TenantId = tenantId,
+                Email = normalizedEmail,
+                DisplayName = displayName.Trim(),
+                PasswordHash = HashPassword(password),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            return (user, null);
         }
 
         public async Task<AuthResult?> LoginAsync(LoginInput input)

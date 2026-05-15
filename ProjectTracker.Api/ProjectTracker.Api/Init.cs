@@ -22,6 +22,7 @@ namespace ProjectTracker.Api
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<ITimeEntryService, TimeEntryService>();
             services.AddScoped<ISettingsService, SettingsService>();
