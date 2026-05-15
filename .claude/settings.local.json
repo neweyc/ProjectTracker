@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item *)",
+      "PowerShell(dotnet build *)",
+      "Bash(npx tsc *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet new install *)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.ui\\\\src\\\\\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.Ui2\" -Recurse -Exclude \"node_modules\" | Where-Object { $_.FullName -notmatch \"node_modules\" } | Select-Object FullName)",
+      "PowerShell(dir \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.Ui2\\\\src\" -Recurse -Force | Where-Object { -not $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.Ui2\\\\src\" -Recurse -Force -File | ForEach-Object { $_.FullName })",
+      "Bash(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\" -Recurse -Filter \"schema.sql\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.Ui2\" -Depth 1 | Where-Object { $_.PSIsContainer } | Select-Object Name)",
+      "PowerShell(tree *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\" -Directory)",
+      "Bash(Select-Object Name)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.ui\\\\src\" -Recurse | Where-Object {$_.PSIsContainer} | Select-Object Name)"
+    ]
+  }
+}
