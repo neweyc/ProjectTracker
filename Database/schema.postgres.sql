@@ -5,9 +5,9 @@
 --
 -- Table creation order respects foreign key dependencies:
 --   tenants -> users -> external_logins
---   tenants -> projects -> tasks -> time_entries
---                                -> invoice_line_items
---                       -> invoices -> invoice_line_items
+--   tenants -> clients -> projects -> tasks -> time_entries
+--                                           -> invoice_line_items
+--                          -> invoices -> invoice_line_items
 --   tenants -> system_settings
 
 -- ============================================================
@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS tenants (
     created_at             TIMESTAMPTZ  NOT NULL,
     stripe_customer_id     VARCHAR(100)     NULL,
     stripe_subscription_id VARCHAR(100)     NULL,
-    subscription_status    VARCHAR(50)      NULL
+    subscription_status    VARCHAR(50)      NULL,
+    subscription_tier      VARCHAR(50)  NOT NULL DEFAULT 'Free'
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_tenants_slug ON tenants (slug);
@@ -54,17 +55,33 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_external_logins_provider_subject
     ON external_logins (provider, provider_subject_id);
 
 -- ============================================================
+-- Clients
+-- ============================================================
+CREATE TABLE IF NOT EXISTS clients (
+    id         INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tenant_id  INTEGER      NOT NULL REFERENCES tenants (id) ON DELETE CASCADE,
+    name       VARCHAR(200) NOT NULL,
+    email      VARCHAR(256)     NULL,
+    address    VARCHAR(1000)    NULL,
+    created_at TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS ix_clients_tenant_id ON clients (tenant_id);
+
+-- ============================================================
 -- Projects
 -- ============================================================
 CREATE TABLE IF NOT EXISTS projects (
     id          INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tenant_id   INTEGER      NOT NULL REFERENCES tenants (id) ON DELETE CASCADE,
+    client_id   INTEGER          NULL REFERENCES clients (id) ON DELETE SET NULL,
     name        VARCHAR(200) NOT NULL,
     description VARCHAR(2000)    NULL,
     created_at  TIMESTAMPTZ  NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS ix_projects_tenant_id ON projects (tenant_id);
+CREATE INDEX IF NOT EXISTS ix_projects_client_id ON projects (client_id);
 
 -- ============================================================
 -- Tasks  (self-referencing: subtasks point back to a parent)
@@ -155,15 +172,13 @@ CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
 );
 
 -- Mark all migrations as applied so dotnet ef does not re-run them.
--- After running "dotnet ef migrations add AddAuthAndMultiTenant", replace
--- the placeholder ID below with the generated timestamp-prefixed name.
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
 SELECT src."MigrationId", src."ProductVersion"
 FROM (VALUES
-    ('20260504235106_initial',               '9.0.0'),
-    ('20260505023210_AddInvoicesAdvanced',   '9.0.0'),
-    ('20260505024514_AddInvoiceDetails',     '9.0.0'),
-    ('YYYYMMDDHHMMSS_AddAuthAndMultiTenant', '10.0.0')
+    ('20260504000000_InitialCreate',       '10.0.1'),
+    ('20260515171651_AddStripeToTenant',    '10.0.1'),
+    ('20260515232548_AddSubscriptionTierToTenant', '10.0.1'),
+    ('20260515233350_AddClientsTable',             '10.0.1')
 ) AS src ("MigrationId", "ProductVersion")
 WHERE NOT EXISTS (
     SELECT 1 FROM "__EFMigrationsHistory" h

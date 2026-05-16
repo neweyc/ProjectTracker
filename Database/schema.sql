@@ -6,9 +6,9 @@
 --
 -- Table creation order respects foreign key dependencies:
 --   Tenants -> Users -> ExternalLogins
---   Tenants -> Projects -> Tasks -> TimeEntries
---                       -> InvoiceLineItems
---                       -> Invoices -> InvoiceLineItems
+--   Tenants -> Clients -> Projects -> Tasks -> TimeEntries
+--                                           -> InvoiceLineItems
+--                          -> Invoices -> InvoiceLineItems
 --   Tenants -> SystemSettings
 
 -- ============================================================
@@ -25,6 +25,7 @@ BEGIN
         StripeCustomerId     NVARCHAR(100)     NULL,
         StripeSubscriptionId NVARCHAR(100)     NULL,
         SubscriptionStatus   NVARCHAR(50)      NULL,
+        SubscriptionTier     NVARCHAR(50)  NOT NULL DEFAULT 'Free',
 
         CONSTRAINT PK_Tenants PRIMARY KEY (Id)
     );
@@ -86,6 +87,32 @@ END;
 GO
 
 -- ============================================================
+-- Clients
+-- ============================================================
+IF OBJECT_ID(N'dbo.Clients', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Clients
+    (
+        Id        INT           NOT NULL IDENTITY(1,1),
+        TenantId  INT           NOT NULL,
+        Name      NVARCHAR(200) NOT NULL,
+        Email     NVARCHAR(256)     NULL,
+        Address   NVARCHAR(1000)    NULL,
+        CreatedAt DATETIME2     NOT NULL,
+
+        CONSTRAINT PK_Clients PRIMARY KEY (Id),
+
+        CONSTRAINT FK_Clients_Tenants_TenantId
+            FOREIGN KEY (TenantId)
+            REFERENCES dbo.Tenants (Id)
+            ON DELETE CASCADE
+    );
+
+    CREATE INDEX IX_Clients_TenantId ON dbo.Clients (TenantId);
+END;
+GO
+
+-- ============================================================
 -- Projects
 -- ============================================================
 IF OBJECT_ID(N'dbo.Projects', N'U') IS NULL
@@ -94,6 +121,7 @@ BEGIN
     (
         Id          INT            NOT NULL IDENTITY(1,1),
         TenantId    INT            NOT NULL,
+        ClientId    INT                NULL,
         Name        NVARCHAR(200)  NOT NULL,
         Description NVARCHAR(2000)     NULL,
         CreatedAt   DATETIME2      NOT NULL,
@@ -103,10 +131,16 @@ BEGIN
         CONSTRAINT FK_Projects_Tenants_TenantId
             FOREIGN KEY (TenantId)
             REFERENCES dbo.Tenants (Id)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
+
+        CONSTRAINT FK_Projects_Clients_ClientId
+            FOREIGN KEY (ClientId)
+            REFERENCES dbo.Clients (Id)
+            ON DELETE SET NULL
     );
 
     CREATE INDEX IX_Projects_TenantId ON dbo.Projects (TenantId);
+    CREATE INDEX IX_Projects_ClientId ON dbo.Projects (ClientId);
 END;
 GO
 
@@ -274,15 +308,13 @@ END;
 GO
 
 -- Mark all migrations as applied so dotnet ef does not re-run them.
--- After running "dotnet ef migrations add AddAuthAndMultiTenant", replace
--- the placeholder ID below with the generated timestamp-prefixed name.
 INSERT INTO dbo.__EFMigrationsHistory (MigrationId, ProductVersion)
 SELECT src.MigrationId, src.ProductVersion
 FROM (VALUES
-    (N'20260504235106_initial',               N'9.0.0'),
-    (N'20260505023210_AddInvoicesAdvanced',   N'9.0.0'),
-    (N'20260505024514_AddInvoiceDetails',     N'9.0.0'),
-    (N'YYYYMMDDHHMMSS_AddAuthAndMultiTenant', N'10.0.0')
+    (N'20260504000000_InitialCreate',       N'10.0.1'),
+    (N'20260515171651_AddStripeToTenant',    N'10.0.1'),
+    (N'20260515232548_AddSubscriptionTierToTenant', N'10.0.1'),
+    (N'20260515233350_AddClientsTable',             N'10.0.1')
 ) AS src (MigrationId, ProductVersion)
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.__EFMigrationsHistory h
