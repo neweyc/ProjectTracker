@@ -6,7 +6,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: "${DB_CONNECTION_STRING}"
       Stripe__SecretKey: "${STRIPE_SECRET_KEY}"
-      Stripe__PriceId: "${STRIPE_PRICE_ID}"
+      Stripe__SoloPriceId: "${STRIPE_SOLO_PRICE_ID}"
+      Stripe__TeamPriceId: "${STRIPE_TEAM_PRICE_ID}"
       Stripe__WebhookSecret: "${STRIPE_WEBHOOK_SECRET}"
 
   ui:

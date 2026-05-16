@@ -1,0 +1,22 @@
+# --- IDE ---
+.vs/
+.vscode/
+.idea/
+
+# --- .NET ---
+**/bin/
+**/obj/
+**/secrets.json
+
+# --- Node ---
+**/node_modules/
+**/dist/
+
+# --- Environment Secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- OS ---
+.DS_Store
+Thumbs.db
