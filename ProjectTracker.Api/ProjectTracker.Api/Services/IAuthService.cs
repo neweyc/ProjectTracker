@@ -40,6 +40,14 @@ namespace ProjectTracker.Api.Services
                 SubscriptionTier = "Free" 
             };
             context.Tenants.Add(tenant);
+            
+            // Create default settings for the new tenant
+            context.SystemSettings.Add(new SystemSettings 
+            { 
+                Tenant = tenant, 
+                NextInvoiceSequence = 1 
+            });
+
             await context.SaveChangesAsync();
 
             var user = new User

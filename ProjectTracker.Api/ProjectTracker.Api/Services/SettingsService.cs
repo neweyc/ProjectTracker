@@ -11,6 +11,13 @@ namespace ProjectTracker.Api.Services
             var settings = await context.SystemSettings.FirstOrDefaultAsync(s => s.TenantId == tenantId);
             if (settings == null)
             {
+                // Verify tenant actually exists before creating settings
+                var tenantExists = await context.Tenants.AnyAsync(t => t.Id == tenantId);
+                if (!tenantExists)
+                {
+                    throw new InvalidOperationException($"Cannot retrieve settings for non-existent tenant ID {tenantId}. Your session may be stale.");
+                }
+
                 settings = new SystemSettings { TenantId = tenantId, NextInvoiceSequence = 1 };
                 context.SystemSettings.Add(settings);
                 await context.SaveChangesAsync();
@@ -23,6 +30,13 @@ namespace ProjectTracker.Api.Services
             var settings = await context.SystemSettings.FirstOrDefaultAsync(s => s.TenantId == tenantId);
             if (settings == null)
             {
+                // Verify tenant actually exists before creating settings
+                var tenantExists = await context.Tenants.AnyAsync(t => t.Id == tenantId);
+                if (!tenantExists)
+                {
+                    throw new InvalidOperationException($"Cannot update settings for non-existent tenant ID {tenantId}.");
+                }
+
                 settings = new SystemSettings { TenantId = tenantId };
                 context.SystemSettings.Add(settings);
             }
