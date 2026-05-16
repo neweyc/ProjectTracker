@@ -11,11 +11,15 @@ namespace ProjectTracker.Api
     {
         public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
+            var connectionString = configuration["DB_CONNECTION_STRING"] 
+                ?? configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Database connection string is not configured.");
 
             services.AddDbContext<ProjectTrackerDbContext>(options =>
-                options.UseNpgsql(connectionString));
+            {
+                options.UseNpgsql(connectionString)
+                       .UseSnakeCaseNamingConvention();
+            });
 
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUser>();

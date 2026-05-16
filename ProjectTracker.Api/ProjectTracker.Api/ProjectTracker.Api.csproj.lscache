@@ -458,14 +458,15 @@ Services/
  azure.core/1.38.0/lib/net6.0/Azure.Core.dll
  azure.identity/1.11.4/lib/netstandard2.0/Azure.Identity.dll
  dotnetenv/3.2.0/lib/netstandard2.0/DotNetEnv.dll
+ efcore.namingconventions/10.0.1/lib/net10.0/EFCore.NamingConventions.dll
  microsoft.aspnetcore.openapi/10.0.6/lib/net10.0/Microsoft.AspNetCore.OpenApi.dll
  microsoft.bcl.asyncinterfaces/7.0.0/lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll
  microsoft.bcl.cryptography/9.0.0/lib/net9.0/Microsoft.Bcl.Cryptography.dll
  microsoft.data.sqlclient/6.0.1/ref/net9.0/Microsoft.Data.SqlClient.dll
- microsoft.entityframeworkcore.abstractions/10.0.0-preview.3.25171.6/lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll
- microsoft.entityframeworkcore.relational/10.0.0-preview.3.25171.6/lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll
+ microsoft.entityframeworkcore.abstractions/10.0.1/lib/net10.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+ microsoft.entityframeworkcore.relational/10.0.1/lib/net10.0/Microsoft.EntityFrameworkCore.Relational.dll
  microsoft.entityframeworkcore.sqlserver/10.0.0-preview.2.25163.8/lib/net10.0/Microsoft.EntityFrameworkCore.SqlServer.dll
- microsoft.entityframeworkcore/10.0.0-preview.3.25171.6/lib/net10.0/Microsoft.EntityFrameworkCore.dll
+ microsoft.entityframeworkcore/10.0.1/lib/net10.0/Microsoft.EntityFrameworkCore.dll
  microsoft.identity.client.extensions.msal/4.61.3/lib/net6.0/Microsoft.Identity.Client.Extensions.Msal.dll
  microsoft.identity.client/4.61.3/lib/net6.0/Microsoft.Identity.Client.dll
  microsoft.identitymodel.abstractions/7.5.0/lib/net8.0/Microsoft.IdentityModel.Abstractions.dll
@@ -519,6 +520,7 @@ Services/
  microsoft.codeanalysis.analyzers/3.3.4/analyzers/dotnet/cs/
   Microsoft.CodeAnalysis.Analyzers.dll
   Microsoft.CodeAnalysis.CSharp.Analyzers.dll
+ microsoft.entityframeworkcore.analyzers/10.0.1/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
 
 [analyzerConfigFiles]
 <DOTNET>/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
