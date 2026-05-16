@@ -457,6 +457,7 @@ Services/
 <NUGET>/
  azure.core/1.38.0/lib/net6.0/Azure.Core.dll
  azure.identity/1.11.4/lib/netstandard2.0/Azure.Identity.dll
+ dotnetenv/3.2.0/lib/netstandard2.0/DotNetEnv.dll
  microsoft.aspnetcore.openapi/10.0.6/lib/net10.0/Microsoft.AspNetCore.OpenApi.dll
  microsoft.bcl.asyncinterfaces/7.0.0/lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll
  microsoft.bcl.cryptography/9.0.0/lib/net9.0/Microsoft.Bcl.Cryptography.dll
@@ -479,6 +480,7 @@ Services/
  npgsql.entityframeworkcore.postgresql/10.0.0-preview.3/lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
  npgsql/9.0.3/lib/net8.0/Npgsql.dll
  stripe.net/47.0.0/lib/net8.0/Stripe.net.dll
+ superpower/3.0.0/lib/net5.0/Superpower.dll
  system.clientmodel/1.0.0/lib/net6.0/System.ClientModel.dll
  system.configuration.configurationmanager/9.0.0/lib/net9.0/System.Configuration.ConfigurationManager.dll
  system.identitymodel.tokens.jwt/7.5.0/lib/net8.0/System.IdentityModel.Tokens.Jwt.dll

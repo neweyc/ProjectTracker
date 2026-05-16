@@ -1,5 +1,8 @@
+using DotNetEnv;
 using ProjectTracker.Api;
 using ProjectTracker.Api.Data;
+
+Env.Load("../../.env");
 
 var builder = WebApplication.CreateBuilder(args);
 
