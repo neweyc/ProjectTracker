@@ -6,12 +6,14 @@ export interface CreateTaskInput {
   parentTaskId?: number | null
   title: string
   description?: string
+  typeId?: number | null
 }
 
 export interface UpdateTaskInput {
   title: string
   description?: string | null
   isInvoiced: boolean
+  typeId?: number | null
 }
 
 export const tasksApi = {

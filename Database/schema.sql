@@ -145,6 +145,31 @@ END;
 GO
 
 -- ============================================================
+-- TaskTypes  (per-tenant labels with colour)
+-- ============================================================
+IF OBJECT_ID(N'dbo.TaskTypes', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.TaskTypes
+    (
+        Id        INT           NOT NULL IDENTITY(1,1),
+        TenantId  INT           NOT NULL,
+        Name      NVARCHAR(100) NOT NULL,
+        Color     NVARCHAR(20)  NOT NULL,
+        SortOrder INT           NOT NULL DEFAULT 0,
+
+        CONSTRAINT PK_TaskTypes PRIMARY KEY (Id),
+
+        CONSTRAINT FK_TaskTypes_Tenants_TenantId
+            FOREIGN KEY (TenantId)
+            REFERENCES dbo.Tenants (Id)
+            ON DELETE CASCADE
+    );
+
+    CREATE INDEX IX_TaskTypes_TenantId ON dbo.TaskTypes (TenantId);
+END;
+GO
+
+-- ============================================================
 -- Tasks  (self-referencing: subtasks point back to a parent)
 -- ============================================================
 IF OBJECT_ID(N'dbo.Tasks', N'U') IS NULL
@@ -154,6 +179,7 @@ BEGIN
         Id           INT            NOT NULL IDENTITY(1,1),
         ProjectId    INT            NOT NULL,
         ParentTaskId INT                NULL,
+        TypeId       INT                NULL,
         Title        NVARCHAR(500)  NOT NULL,
         Description  NVARCHAR(4000)     NULL,
         Status       NVARCHAR(50)   NOT NULL,
@@ -170,11 +196,17 @@ BEGIN
         CONSTRAINT FK_Tasks_Tasks_ParentTaskId
             FOREIGN KEY (ParentTaskId)
             REFERENCES dbo.Tasks (Id)
-            ON DELETE NO ACTION   -- RESTRICT: prevents orphaned-subtask cycles
+            ON DELETE NO ACTION,   -- RESTRICT: prevents orphaned-subtask cycles
+
+        CONSTRAINT FK_Tasks_TaskTypes_TypeId
+            FOREIGN KEY (TypeId)
+            REFERENCES dbo.TaskTypes (Id)
+            ON DELETE SET NULL
     );
 
     CREATE INDEX IX_Tasks_ProjectId    ON dbo.Tasks (ProjectId);
     CREATE INDEX IX_Tasks_ParentTaskId ON dbo.Tasks (ParentTaskId);
+    CREATE INDEX IX_Tasks_TypeId       ON dbo.Tasks (TypeId);
 END;
 GO
 
@@ -314,7 +346,8 @@ FROM (VALUES
     (N'20260504000000_InitialCreate',       N'10.0.1'),
     (N'20260515171651_AddStripeToTenant',    N'10.0.1'),
     (N'20260515232548_AddSubscriptionTierToTenant', N'10.0.1'),
-    (N'20260515233350_AddClientsTable',             N'10.0.1')
+    (N'20260515233350_AddClientsTable',             N'10.0.1'),
+    (N'20260517000000_AddTaskTypes',                N'10.0.1')
 ) AS src (MigrationId, ProductVersion)
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.__EFMigrationsHistory h

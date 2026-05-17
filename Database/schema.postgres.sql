@@ -84,12 +84,26 @@ CREATE INDEX IF NOT EXISTS ix_projects_tenant_id ON projects (tenant_id);
 CREATE INDEX IF NOT EXISTS ix_projects_client_id ON projects (client_id);
 
 -- ============================================================
+-- TaskTypes  (per-tenant labels with colour)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS task_types (
+    id         INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tenant_id  INTEGER      NOT NULL REFERENCES tenants (id) ON DELETE CASCADE,
+    name       VARCHAR(100) NOT NULL,
+    color      VARCHAR(20)  NOT NULL,
+    sort_order INTEGER      NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS ix_task_types_tenant_id ON task_types (tenant_id);
+
+-- ============================================================
 -- Tasks  (self-referencing: subtasks point back to a parent)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS tasks (
     id             INTEGER      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     project_id     INTEGER      NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     parent_task_id INTEGER          NULL REFERENCES tasks (id) ON DELETE RESTRICT,
+    type_id        INTEGER          NULL REFERENCES task_types (id) ON DELETE SET NULL,
     title          VARCHAR(500) NOT NULL,
     description    VARCHAR(4000)    NULL,
     status         VARCHAR(50)  NOT NULL,
@@ -99,6 +113,7 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 CREATE INDEX IF NOT EXISTS ix_tasks_project_id     ON tasks (project_id);
 CREATE INDEX IF NOT EXISTS ix_tasks_parent_task_id ON tasks (parent_task_id);
+CREATE INDEX IF NOT EXISTS ix_tasks_type_id        ON tasks (type_id);
 
 -- ============================================================
 -- TimeEntries  (top-level tasks only; enforced in application)
@@ -178,7 +193,8 @@ FROM (VALUES
     ('20260504000000_InitialCreate',       '10.0.1'),
     ('20260515171651_AddStripeToTenant',    '10.0.1'),
     ('20260515232548_AddSubscriptionTierToTenant', '10.0.1'),
-    ('20260515233350_AddClientsTable',             '10.0.1')
+    ('20260515233350_AddClientsTable',             '10.0.1'),
+    ('20260517000000_AddTaskTypes',                '10.0.1')
 ) AS src ("MigrationId", "ProductVersion")
 WHERE NOT EXISTS (
     SELECT 1 FROM "__EFMigrationsHistory" h

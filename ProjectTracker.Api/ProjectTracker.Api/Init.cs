@@ -32,6 +32,7 @@ namespace ProjectTracker.Api
             services.AddScoped<ISettingsService, SettingsService>();
             services.AddScoped<IInvoiceService, ProjectTracker.Api.Services.InvoiceService>();
             services.AddScoped<IBillingService, ProjectTracker.Api.Services.BillingService>();
+            services.AddScoped<ITaskTypeService, TaskTypeService>();
 
             StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
 

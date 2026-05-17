@@ -123,6 +123,14 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 
         {/* Footer pills */}
         <div className="flex items-center gap-1.5 flex-wrap">
+          {task.typeName && task.typeColor && (
+            <span
+              className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+              style={{ backgroundColor: `${task.typeColor}22`, color: task.typeColor, border: `1px solid ${task.typeColor}44` }}
+            >
+              {task.typeName}
+            </span>
+          )}
           {task.totalHours > 0 && (
             <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-[#1f2937] px-1.5 py-0.5 rounded">
               <Clock className="w-2.5 h-2.5" />

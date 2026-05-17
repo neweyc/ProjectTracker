@@ -22,7 +22,7 @@ namespace ProjectTracker.Api.Features.Tasks.CreateTask
                 return Results.BadRequest($"Project {request.ProjectId} does not exist.");
 
             var task = await taskService.CreateAsync(
-                request.ProjectId, request.ParentTaskId, request.Title.Trim(), request.Description?.Trim(), currentUser.TenantId);
+                request.ProjectId, request.ParentTaskId, request.Title.Trim(), request.Description?.Trim(), request.TypeId, currentUser.TenantId);
 
             if (task is null)
                 return Results.BadRequest("Parent task not found or is already a subtask.");
@@ -30,10 +30,10 @@ namespace ProjectTracker.Api.Features.Tasks.CreateTask
             return Results.Created($"/api/tasks/{task.Id}", new CreateTaskResponse(
                 task.Id, task.ProjectId, task.ParentTaskId,
                 task.Title, task.Description, task.Status.ToString(),
-                task.IsInvoiced, task.CreatedAt));
+                task.IsInvoiced, task.CreatedAt, task.TypeId));
         }
     }
 
-    public record CreateTaskRequest(int ProjectId, int? ParentTaskId, string Title, string? Description);
-    public record CreateTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt);
+    public record CreateTaskRequest(int ProjectId, int? ParentTaskId, string Title, string? Description, int? TypeId);
+    public record CreateTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt, int? TypeId);
 }

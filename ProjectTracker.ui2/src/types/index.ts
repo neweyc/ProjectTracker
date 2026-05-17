@@ -15,6 +15,13 @@ export interface Client {
   createdAt: string
 }
 
+export interface TaskType {
+  id: number
+  name: string
+  color: string
+  sortOrder: number
+}
+
 export type TaskStatus = 'Created' | 'InProgress' | 'Complete'
 
 export interface Project {
@@ -37,6 +44,9 @@ export interface Task {
   subTaskCount: number
   totalHours: number
   createdAt: string
+  typeId?: number | null
+  typeName?: string | null
+  typeColor?: string | null
 }
 
 export interface SubTask {
@@ -67,6 +77,9 @@ export interface TaskDetail {
   isInvoiced: boolean
   createdAt: string
   totalHours: number
+  typeId?: number | null
+  typeName?: string | null
+  typeColor?: string | null
   subTasks: SubTask[]
   timeEntries: TimeEntry[]
 }

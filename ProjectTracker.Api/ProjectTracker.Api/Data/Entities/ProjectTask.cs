@@ -11,6 +11,9 @@ namespace ProjectTracker.Api.Data.Entities
         public bool IsInvoiced { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public int? TypeId { get; set; }
+        public TaskType? Type { get; set; }
+
         public Project Project { get; set; } = null!;
         public ProjectTask? ParentTask { get; set; }
         public ICollection<ProjectTask> SubTasks { get; set; } = new List<ProjectTask>();

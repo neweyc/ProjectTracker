@@ -16,6 +16,7 @@ namespace ProjectTracker.Api.Data
         public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<InvoiceLineItem> InvoiceLineItems => Set<InvoiceLineItem>();
+        public DbSet<TaskType> TaskTypes => Set<TaskType>();
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -96,6 +97,18 @@ namespace ProjectTracker.Api.Data
                     .OnDelete(DeleteBehavior.SetNull);
             });
 
+            modelBuilder.Entity<TaskType>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Color).IsRequired().HasMaxLength(20);
+
+                entity.HasOne(e => e.Tenant)
+                    .WithMany()
+                    .HasForeignKey(e => e.TenantId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<ProjectTask>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -112,6 +125,11 @@ namespace ProjectTracker.Api.Data
                     .WithMany(e => e.SubTasks)
                     .HasForeignKey(e => e.ParentTaskId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Type)
+                    .WithMany()
+                    .HasForeignKey(e => e.TypeId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<TimeEntry>(entity =>

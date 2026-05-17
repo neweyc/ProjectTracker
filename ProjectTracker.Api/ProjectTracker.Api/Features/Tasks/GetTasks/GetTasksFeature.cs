@@ -22,11 +22,12 @@ namespace ProjectTracker.Api.Features.Tasks.GetTasks
             var response = tasks.Select(t => new GetTasksResponse(
                 t.Id, t.ProjectId, t.Title, t.Description, t.Status.ToString(),
                 t.IsInvoiced, t.SubTasks.Count,
-                t.TimeEntries.Sum(e => e.Hours), t.CreatedAt));
+                t.TimeEntries.Sum(e => e.Hours), t.CreatedAt,
+                t.TypeId, t.Type?.Name, t.Type?.Color));
 
             return Results.Ok(response);
         }
     }
 
-    public record GetTasksResponse(int Id, int ProjectId, string Title, string? Description, string Status, bool IsInvoiced, int SubTaskCount, decimal TotalHours, DateTime CreatedAt);
+    public record GetTasksResponse(int Id, int ProjectId, string Title, string? Description, string Status, bool IsInvoiced, int SubTaskCount, decimal TotalHours, DateTime CreatedAt, int? TypeId, string? TypeName, string? TypeColor);
 }
