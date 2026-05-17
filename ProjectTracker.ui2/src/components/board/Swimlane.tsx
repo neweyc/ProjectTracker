@@ -60,7 +60,6 @@ export function Swimlane({ project, showComplete, hideInvoiced, onTaskClick }: S
   const totalCount = topLevelTasks.length
   const progressPct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
   const totalHours = topLevelTasks.reduce((sum, t) => sum + t.totalHours, 0)
-  const hiddenCompleteCount = showComplete ? 0 : completedCount
 
   const tasksByStatus: Record<TaskStatus, typeof topLevelTasks> = {
     Created: [],
@@ -71,9 +70,6 @@ export function Swimlane({ project, showComplete, hideInvoiced, onTaskClick }: S
     tasksByStatus[t.status].push(t)
   }
 
-  const visibleStatuses: TaskStatus[] = showComplete
-    ? STATUS_ORDER
-    : ['Created', 'InProgress']
 
   return (
     <div className="rounded-xl border border-[#1f2937] bg-[#0d1117] overflow-hidden">
@@ -103,9 +99,9 @@ export function Swimlane({ project, showComplete, hideInvoiced, onTaskClick }: S
               {formatHours(totalHours)}
             </div>
           )}
-          {hiddenCompleteCount > 0 && (
+          {!showComplete && completedCount > 0 && (
             <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-              {hiddenCompleteCount} done
+              {completedCount} done
             </span>
           )}
           <span className="text-xs text-gray-500 bg-[#1f2937] px-2 py-0.5 rounded-full">
@@ -150,23 +146,17 @@ export function Swimlane({ project, showComplete, hideInvoiced, onTaskClick }: S
           >
             <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
               <div className="grid grid-cols-3 divide-x divide-[#1f2937] min-h-[80px]">
-                {visibleStatuses.map((status, i) => (
+                {STATUS_ORDER.map((status, i) => (
                   <BoardColumn
                     key={status}
                     status={status}
                     tasks={tasksByStatus[status]}
                     onTaskClick={onTaskClick}
-                    isLast={i === visibleStatuses.length - 1}
+                    isLast={i === STATUS_ORDER.length - 1}
+                    hideCards={!showComplete && status === 'Complete'}
+                    isDraggingAny={activeTask !== null}
                   />
                 ))}
-                {!showComplete && (
-                  <div className="flex items-center justify-center p-4 bg-[#0a0e16]">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-emerald-400">{completedCount}</div>
-                      <div className="text-xs text-gray-600 mt-0.5">completed</div>
-                    </div>
-                  </div>
-                )}
               </div>
               <DragOverlay dropAnimation={null}>
                 {activeTask && (

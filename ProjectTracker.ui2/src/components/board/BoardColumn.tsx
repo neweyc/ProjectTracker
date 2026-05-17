@@ -9,6 +9,8 @@ interface BoardColumnProps {
   tasks: Task[]
   onTaskClick: (taskId: number) => void
   isLast: boolean
+  hideCards?: boolean
+  isDraggingAny?: boolean
 }
 
 const STATUS_CONFIG: Record<TaskStatus, { dot: string; label: string; countBg: string }> = {
@@ -29,7 +31,7 @@ const STATUS_CONFIG: Record<TaskStatus, { dot: string; label: string; countBg: s
   },
 }
 
-export function BoardColumn({ status, tasks, onTaskClick }: BoardColumnProps) {
+export function BoardColumn({ status, tasks, onTaskClick, hideCards, isDraggingAny }: BoardColumnProps) {
   const config = STATUS_CONFIG[status]
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
@@ -58,23 +60,32 @@ export function BoardColumn({ status, tasks, onTaskClick }: BoardColumnProps) {
         </AnimatePresence>
       </div>
 
-      {/* Task cards */}
-      <div className="flex flex-col gap-1.5">
-        <AnimatePresence initial={false}>
-          {tasks.map(task => (
-            <motion.div
-              key={task.id}
-              layout
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-            >
-              <TaskCard task={task} onClick={() => onTaskClick(task.id)} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+      {/* Task cards or completed count */}
+      {hideCards ? (
+        <div className="flex items-center justify-center flex-1 py-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-emerald-400">{tasks.length}</div>
+            <div className="text-xs text-gray-600 mt-0.5">completed</div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          <AnimatePresence initial={false}>
+            {tasks.map(task => (
+              <motion.div
+                key={task.id}
+                layout={!isDraggingAny}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+              >
+                <TaskCard task={task} onClick={() => onTaskClick(task.id)} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }
