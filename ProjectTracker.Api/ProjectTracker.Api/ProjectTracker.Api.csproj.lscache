@@ -92,6 +92,7 @@ Features/Billing/
  Webhook/StripeWebhookFeature.cs
 Features/
  Clients/ClientEndpoints.cs
+ Contact/ContactFeature.cs
  CorrectiveActions/CreateCorrectiveActionsFeature.cs
  Health/HealthFeature.cs
  Invoices/
@@ -137,10 +138,12 @@ Routing/IEndpoint.cs
 Services/
  BillingService.cs
  ClientService.cs
+ EmailService.cs
  IAuthService.cs
  IBillingService.cs
  IClientService.cs
  ICurrentUser.cs
+ IEmailService.cs
  IInvoiceService.cs
  InvoiceService.cs
  IProjectService.cs

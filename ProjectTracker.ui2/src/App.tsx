@@ -4,9 +4,10 @@ import { AppShell } from '@/components/layout/AppShell'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { LandingPage } from '@/pages/LandingPage'
+import { ContactPage } from '@/pages/ContactPage'
 import { useAuth } from '@/contexts/AuthContext'
 
-type AuthView = 'landing' | 'login' | 'register'
+type AuthView = 'landing' | 'login' | 'register' | 'contact'
 
 function LoadingScreen() {
   return (
@@ -30,11 +31,16 @@ export default function App() {
   if (!user) {
     if (authView === 'landing') {
       return (
-        <LandingPage 
-          onLogin={() => setAuthView('login')} 
-          onRegister={() => setAuthView('register')} 
+        <LandingPage
+          onLogin={() => setAuthView('login')}
+          onRegister={() => setAuthView('register')}
+          onContact={() => setAuthView('contact')}
         />
       )
+    }
+
+    if (authView === 'contact') {
+      return <ContactPage onBack={() => setAuthView('landing')} />
     }
 
     return authView === 'login'

@@ -9,9 +9,10 @@ import { HeroMockup } from '@/components/landing/HeroMockup'
 interface LandingPageProps {
   onLogin: () => void
   onRegister: () => void
+  onContact: () => void
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister, onContact }) => {
   return (
     <div className="min-h-screen bg-[#080c14] text-white selection:bg-violet-500/30">
       {/* Navbar */}
@@ -24,7 +25,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
             <span className="font-bold text-lg tracking-tight">Olive Invoice</span>
           </div>
           <div className="flex items-center gap-4">
-            <button 
+            <button
+              onClick={onContact}
+              className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+            >
+              Contact
+            </button>
+            <button
               onClick={onLogin}
               className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
             >
@@ -217,6 +224,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
               <Receipt className="w-4.5 h-4.5 text-white" />
+            </div>
+            <div className="flex items-center gap-6">
+              <button onClick={onContact} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                Contact
+              </button>
             </div>
             <p className="text-gray-500 text-sm">© 2026 Olive Invoice. Built for the modern freelancer.</p>
           </div>
