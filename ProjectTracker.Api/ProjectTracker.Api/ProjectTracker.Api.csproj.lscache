@@ -91,6 +91,7 @@ Features/Billing/
 Features/
  Clients/ClientEndpoints.cs
  CorrectiveActions/CreateCorrectiveActionsFeature.cs
+ Health/HealthFeature.cs
  Invoices/
   CreateInvoice/CreateInvoiceFeature.cs
   DeleteInvoice/DeleteInvoiceFeature.cs
