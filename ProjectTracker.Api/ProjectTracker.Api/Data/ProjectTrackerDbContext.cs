@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectTracker.Api.Data.Entities;
 
 namespace ProjectTracker.Api.Data
@@ -15,6 +16,14 @@ namespace ProjectTracker.Api.Data
         public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<InvoiceLineItem> InvoiceLineItems => Set<InvoiceLineItem>();
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<DateTime>()
+                .HaveConversion<UtcDateTimeConverter>();
+            configurationBuilder.Properties<DateTime?>()
+                .HaveConversion<NullableUtcDateTimeConverter>();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -163,4 +172,16 @@ namespace ProjectTracker.Api.Data
             });
         }
     }
+
+    public class UtcDateTimeConverter() : ValueConverter<DateTime, DateTime>(
+        v => v.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            : v.ToUniversalTime(),
+        v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+    public class NullableUtcDateTimeConverter() : ValueConverter<DateTime?, DateTime?>(
+        v => v == null ? v : v.Value.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc)
+            : v.Value.ToUniversalTime(),
+        v => v == null ? v : DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
 }
