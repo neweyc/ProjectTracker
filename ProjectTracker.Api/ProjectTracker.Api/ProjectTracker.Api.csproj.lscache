@@ -63,8 +63,10 @@ Data/Entities/
  InvoiceStatus.cs
  Project.cs
  ProjectTask.cs
+ ProjectTaskPriority.cs
  ProjectTaskStatus.cs
  SystemSettings.cs
+ TaskType.cs
  Tenant.cs
  TimeEntry.cs
  User.cs
@@ -90,6 +92,7 @@ Features/Billing/
  Webhook/StripeWebhookFeature.cs
 Features/
  Clients/ClientEndpoints.cs
+ Contact/ContactFeature.cs
  CorrectiveActions/CreateCorrectiveActionsFeature.cs
  Health/HealthFeature.cs
  Invoices/
@@ -116,6 +119,11 @@ Features/
   GetTasks/GetTasksFeature.cs
   UpdateTask/UpdateTaskFeature.cs
   UpdateTaskStatus/UpdateTaskStatusFeature.cs
+ TaskTypes/
+  CreateTaskType/CreateTaskTypeFeature.cs
+  DeleteTaskType/DeleteTaskTypeFeature.cs
+  GetTaskTypes/GetTaskTypesFeature.cs
+  UpdateTaskType/UpdateTaskTypeFeature.cs
  TimeEntries/
   DeleteTimeEntry/DeleteTimeEntryFeature.cs
   GetTimeEntries/GetTimeEntriesFeature.cs
@@ -130,19 +138,23 @@ Routing/IEndpoint.cs
 Services/
  BillingService.cs
  ClientService.cs
+ EmailService.cs
  IAuthService.cs
  IBillingService.cs
  IClientService.cs
  ICurrentUser.cs
+ IEmailService.cs
  IInvoiceService.cs
  InvoiceService.cs
  IProjectService.cs
  ISettingsService.cs
  ITaskService.cs
+ ITaskTypeService.cs
  ITimeEntryService.cs
  ProjectService.cs
  SettingsService.cs
  TaskService.cs
+ TaskTypeService.cs
  TimeEntryService.cs
 
 [metadataReferences]

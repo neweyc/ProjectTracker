@@ -1,9 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useCreateTask } from '@/hooks/useTasks'
+import { useTaskTypes } from '@/hooks/useTaskTypes'
+import { PRIORITY_ORDER, PRIORITY_CONFIG } from '@/types'
+import type { TaskPriority } from '@/types'
 
 interface Props {
   open: boolean
@@ -21,9 +24,12 @@ interface FormData {
 export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTaskCreated }: Props) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const createTask = useCreateTask()
+  const { data: taskTypes = [] } = useTaskTypes()
+  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null)
+  const [selectedPriority, setSelectedPriority] = useState<TaskPriority | null>(null)
 
   useEffect(() => {
-    if (!open) reset()
+    if (!open) { reset(); setSelectedTypeId(null); setSelectedPriority(null) }
   }, [open, reset])
 
   const onSubmit = async (data: FormData) => {
@@ -32,6 +38,8 @@ export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTask
       parentTaskId: parentTaskId ?? null,
       title: data.title,
       description: data.description || undefined,
+      typeId: selectedTypeId,
+      priority: selectedPriority,
     })
     onClose()
     if (!parentTaskId) onTaskCreated?.(task.id)
@@ -79,6 +87,80 @@ export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTask
                       <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
                     )}
                   </div>
+
+                  {!isSubtask && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                        Priority <span className="text-gray-600">(optional)</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPriority(null)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                            selectedPriority === null
+                              ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
+                              : 'border-[#374151] text-gray-500 hover:border-[#4b5563] hover:text-gray-300'
+                          }`}
+                        >
+                          None
+                        </button>
+                        {PRIORITY_ORDER.map(p => {
+                          const cfg = PRIORITY_CONFIG[p]
+                          return (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={() => setSelectedPriority(p)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                                selectedPriority === p
+                                  ? `${cfg.color} ${cfg.bg} ${cfg.border}`
+                                  : 'border-[#374151] text-gray-500 hover:border-[#4b5563] hover:text-gray-300'
+                              }`}
+                            >
+                              {cfg.label}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {!isSubtask && taskTypes.length > 0 && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                        Type <span className="text-gray-600">(optional)</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTypeId(null)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                            selectedTypeId === null
+                              ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
+                              : 'border-[#374151] text-gray-500 hover:border-[#4b5563] hover:text-gray-300'
+                          }`}
+                        >
+                          None
+                        </button>
+                        {taskTypes.map(type => (
+                          <button
+                            key={type.id}
+                            type="button"
+                            onClick={() => setSelectedTypeId(type.id)}
+                            className="px-2.5 py-1 rounded-full text-xs font-medium border transition-colors"
+                            style={
+                              selectedTypeId === type.id
+                                ? { backgroundColor: `${type.color}22`, color: type.color, borderColor: `${type.color}66` }
+                                : { borderColor: '#374151', color: '#6b7280' }
+                            }
+                          >
+                            {type.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-1.5">

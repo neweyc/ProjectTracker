@@ -1,16 +1,18 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Receipt, LayoutGrid, Clock, 
+import {
+  Receipt, LayoutGrid, Clock,
   ArrowRight, ShieldCheck, Zap, Star
 } from 'lucide-react'
+import { HeroMockup } from '@/components/landing/HeroMockup'
 
 interface LandingPageProps {
   onLogin: () => void
   onRegister: () => void
+  onContact: () => void
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister, onContact }) => {
   return (
     <div className="min-h-screen bg-[#080c14] text-white selection:bg-violet-500/30">
       {/* Navbar */}
@@ -23,7 +25,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
             <span className="font-bold text-lg tracking-tight">Olive Invoice</span>
           </div>
           <div className="flex items-center gap-4">
-            <button 
+            <button
+              onClick={onContact}
+              className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+            >
+              Contact
+            </button>
+            <button
               onClick={onLogin}
               className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
             >
@@ -65,31 +73,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
                 Start for Free
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button 
+              <button
                 onClick={onLogin}
                 className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-lg font-bold transition-all"
               >
-                View Live Demo
+                Sign In
               </button>
             </div>
           </motion.div>
 
-          {/* Hero Visual Placeholder */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-20 relative"
+          {/* Hero Mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.25 }}
+            className="mt-20"
           >
-            <div className="absolute inset-0 bg-violet-500/20 blur-[120px] rounded-full" />
-            <div className="relative rounded-2xl border border-white/10 bg-[#0f1420] p-4 shadow-2xl">
-              <div className="rounded-xl overflow-hidden border border-white/5 bg-[#080c14] aspect-[16/9] flex items-center justify-center">
-                 <div className="flex flex-col items-center gap-4 text-gray-700">
-                    <LayoutGrid className="w-16 h-16 opacity-20" />
-                    <p className="text-sm font-medium uppercase tracking-widest opacity-20">Dashboard Preview</p>
-                 </div>
-              </div>
-            </div>
+            <HeroMockup />
           </motion.div>
         </div>
       </section>
@@ -224,6 +224,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onRegister })
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
               <Receipt className="w-4.5 h-4.5 text-white" />
+            </div>
+            <div className="flex items-center gap-6">
+              <button onClick={onContact} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                Contact
+              </button>
             </div>
             <p className="text-gray-500 text-sm">© 2026 Olive Invoice. Built for the modern freelancer.</p>
           </div>

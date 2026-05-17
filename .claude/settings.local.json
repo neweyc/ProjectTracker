@@ -19,7 +19,11 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\" -Directory)",
       "Bash(Select-Object Name)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\\\\ProjectTracker.ui\\\\src\" -Recurse | Where-Object {$_.PSIsContainer} | Select-Object Name)",
-      "PowerShell(git *)"
+      "PowerShell(git *)",
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Projects\\\\ProjectTracker\" -Recurse -Depth 2)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)"
     ]
   }
 }

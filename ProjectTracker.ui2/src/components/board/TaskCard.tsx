@@ -5,7 +5,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Clock, GitBranch, ChevronDown, DollarSign } from 'lucide-react'
 import { useUpdateTaskStatus } from '@/hooks/useTasks'
 import type { Task, TaskStatus } from '@/types'
-import { STATUS_LABELS } from '@/types'
+import { STATUS_LABELS, PRIORITY_CONFIG } from '@/types'
 import { formatHours } from '@/lib/utils'
 
 interface TaskCardProps {
@@ -123,6 +123,19 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 
         {/* Footer pills */}
         <div className="flex items-center gap-1.5 flex-wrap">
+          {task.priority && (
+            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${PRIORITY_CONFIG[task.priority].color} ${PRIORITY_CONFIG[task.priority].bg} ${PRIORITY_CONFIG[task.priority].border}`}>
+              {PRIORITY_CONFIG[task.priority].label}
+            </span>
+          )}
+          {task.typeName && task.typeColor && (
+            <span
+              className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+              style={{ backgroundColor: `${task.typeColor}22`, color: task.typeColor, border: `1px solid ${task.typeColor}44` }}
+            >
+              {task.typeName}
+            </span>
+          )}
           {task.totalHours > 0 && (
             <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-[#1f2937] px-1.5 py-0.5 rounded">
               <Clock className="w-2.5 h-2.5" />

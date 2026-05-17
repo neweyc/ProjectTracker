@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { Drawer } from 'vaul'
 import { motion } from 'framer-motion'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { X, Clock, GitBranch, ChevronDown, Edit2, Check } from 'lucide-react'
+import { X, Clock, GitBranch, ChevronDown, Edit2, Check, Tag } from 'lucide-react'
 import { useTaskDetail, useUpdateTask, useUpdateTaskStatus } from '@/hooks/useTasks'
+import { useTaskTypes } from '@/hooks/useTaskTypes'
 import { SubTaskList } from './SubTaskList'
 import { TimeEntryList } from '@/components/time/TimeEntryList'
 import { LogTimeModal } from '@/components/time/LogTimeModal'
-import { STATUS_LABELS, STATUS_ORDER } from '@/types'
-import type { TaskStatus } from '@/types'
+import { STATUS_LABELS, STATUS_ORDER, PRIORITY_ORDER, PRIORITY_CONFIG } from '@/types'
+import type { TaskPriority, TaskStatus } from '@/types'
 import { formatHours } from '@/lib/utils'
 
 interface TaskDetailDrawerProps {
@@ -27,6 +28,7 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
   const { data: task, isLoading } = useTaskDetail(taskId)
   const updateTask = useUpdateTask()
   const updateStatus = useUpdateTaskStatus()
+  const { data: taskTypes = [] } = useTaskTypes()
   const [logTimeOpen, setLogTimeOpen] = useState(false)
   const [editingTitle, setEditingTitle] = useState(false)
   const [titleValue, setTitleValue] = useState('')
@@ -46,7 +48,7 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
     if (!task || !titleValue.trim()) return
     updateTask.mutate({
       id: task.id,
-      data: { title: titleValue.trim(), description: task.description, isInvoiced: task.isInvoiced },
+      data: { title: titleValue.trim(), description: task.description, isInvoiced: task.isInvoiced, typeId: task.typeId, priority: task.priority },
     })
     setEditingTitle(false)
   }
@@ -57,7 +59,7 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
     if (trimmed !== (task.description ?? null)) {
       updateTask.mutate({
         id: task.id,
-        data: { title: task.title, description: trimmed, isInvoiced: task.isInvoiced },
+        data: { title: task.title, description: trimmed, isInvoiced: task.isInvoiced, typeId: task.typeId, priority: task.priority },
       })
     }
     setEditingDescription(false)
@@ -72,7 +74,23 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
     if (!task) return
     updateTask.mutate({
       id: task.id,
-      data: { title: task.title, description: task.description, isInvoiced: !task.isInvoiced },
+      data: { title: task.title, description: task.description, isInvoiced: !task.isInvoiced, typeId: task.typeId, priority: task.priority },
+    })
+  }
+
+  const handleTypeChange = (typeId: number | null) => {
+    if (!task) return
+    updateTask.mutate({
+      id: task.id,
+      data: { title: task.title, description: task.description, isInvoiced: task.isInvoiced, typeId, priority: task.priority },
+    })
+  }
+
+  const handlePriorityChange = (priority: TaskPriority | null) => {
+    if (!task) return
+    updateTask.mutate({
+      id: task.id,
+      data: { title: task.title, description: task.description, isInvoiced: task.isInvoiced, typeId: task.typeId, priority },
     })
   }
 
@@ -128,8 +146,8 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
                           </button>
                         )}
 
-                        {/* Status badge */}
-                        <div className="mt-2">
+                        {/* Status + Type badges */}
+                        <div className="mt-2 flex items-center gap-2 flex-wrap">
                           <DropdownMenu.Root>
                             <DropdownMenu.Trigger asChild>
                               <button className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${styles.text} ${styles.bg} ${styles.border} transition-colors hover:opacity-80`}>
@@ -157,6 +175,99 @@ export function TaskDetailDrawer({ taskId, projectId, onClose }: TaskDetailDrawe
                                     {STATUS_LABELS[status]}
                                   </DropdownMenu.Item>
                                 ))}
+                              </DropdownMenu.Content>
+                            </DropdownMenu.Portal>
+                          </DropdownMenu.Root>
+
+                          {taskTypes.length > 0 && (
+                            <DropdownMenu.Root>
+                              <DropdownMenu.Trigger asChild>
+                                <button
+                                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors hover:opacity-80"
+                                  style={
+                                    task.typeName && task.typeColor
+                                      ? { backgroundColor: `${task.typeColor}22`, color: task.typeColor, borderColor: `${task.typeColor}66` }
+                                      : { backgroundColor: 'transparent', color: '#6b7280', borderColor: '#374151' }
+                                  }
+                                >
+                                  <Tag className="w-3 h-3" />
+                                  {task.typeName ?? 'No type'}
+                                  <ChevronDown className="w-3 h-3 ml-0.5" />
+                                </button>
+                              </DropdownMenu.Trigger>
+                              <DropdownMenu.Portal>
+                                <DropdownMenu.Content
+                                  className="bg-[#1f2937] border border-[#374151] rounded-xl shadow-2xl py-1 z-[60] min-w-[160px]"
+                                  sideOffset={4}
+                                >
+                                  <DropdownMenu.Item
+                                    onSelect={() => handleTypeChange(null)}
+                                    className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none transition-colors ${
+                                      !task.typeId ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                    }`}
+                                  >
+                                    <div className="w-2 h-2 rounded-full bg-gray-600" />
+                                    None
+                                  </DropdownMenu.Item>
+                                  {taskTypes.map(type => (
+                                    <DropdownMenu.Item
+                                      key={type.id}
+                                      onSelect={() => handleTypeChange(type.id)}
+                                      className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none transition-colors ${
+                                        task.typeId === type.id ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                      }`}
+                                    >
+                                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: type.color }} />
+                                      {type.name}
+                                    </DropdownMenu.Item>
+                                  ))}
+                                </DropdownMenu.Content>
+                              </DropdownMenu.Portal>
+                            </DropdownMenu.Root>
+                          )}
+
+                          <DropdownMenu.Root>
+                            <DropdownMenu.Trigger asChild>
+                              <button
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors hover:opacity-80 ${
+                                  task.priority
+                                    ? `${PRIORITY_CONFIG[task.priority].color} ${PRIORITY_CONFIG[task.priority].bg} ${PRIORITY_CONFIG[task.priority].border}`
+                                    : 'text-gray-500 border-[#374151]'
+                                }`}
+                              >
+                                {task.priority ? PRIORITY_CONFIG[task.priority].label : 'Priority'}
+                                <ChevronDown className="w-3 h-3 ml-0.5" />
+                              </button>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Portal>
+                              <DropdownMenu.Content
+                                className="bg-[#1f2937] border border-[#374151] rounded-xl shadow-2xl py-1 z-[60] min-w-[140px]"
+                                sideOffset={4}
+                              >
+                                <DropdownMenu.Item
+                                  onSelect={() => handlePriorityChange(null)}
+                                  className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none transition-colors ${
+                                    !task.priority ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                  }`}
+                                >
+                                  <div className="w-2 h-2 rounded-full bg-gray-600" />
+                                  None
+                                </DropdownMenu.Item>
+                                {PRIORITY_ORDER.map(p => {
+                                  const cfg = PRIORITY_CONFIG[p]
+                                  return (
+                                    <DropdownMenu.Item
+                                      key={p}
+                                      onSelect={() => handlePriorityChange(p)}
+                                      className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none transition-colors ${
+                                        task.priority === p ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                      }`}
+                                    >
+                                      <div className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                                      {cfg.label}
+                                    </DropdownMenu.Item>
+                                  )
+                                })}
                               </DropdownMenu.Content>
                             </DropdownMenu.Portal>
                           </DropdownMenu.Root>

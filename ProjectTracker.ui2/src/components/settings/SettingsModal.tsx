@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as Dialog from '@radix-ui/react-dialog'
-import { X, Settings, CreditCard, LayoutGrid, Users } from 'lucide-react'
+import { X, Settings, CreditCard, LayoutGrid, Users, Tag } from 'lucide-react'
 import { useSettings, useUpdateSettings } from '@/hooks/useSettings'
 import { BillingSettings } from './BillingSettings'
 import { ClientManager } from './ClientManager'
 import { TeamManager } from './TeamManager'
+import { TaskTypeManager } from './TaskTypeManager'
 
 interface Props {
   open: boolean
@@ -19,7 +20,7 @@ interface FormData {
   nextInvoiceSequence: number
 }
 
-type Tab = 'general' | 'clients' | 'team' | 'billing'
+type Tab = 'general' | 'task-types' | 'clients' | 'team' | 'billing'
 
 export function SettingsModal({ open, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('general')
@@ -89,10 +90,21 @@ export function SettingsModal({ open, onClose }: Props) {
                       General
                     </button>
                     <button
+                      onClick={() => setActiveTab('task-types')}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        activeTab === 'task-types'
+                          ? 'bg-violet-600/10 text-violet-400'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Tag className="w-4 h-4" />
+                      Task Types
+                    </button>
+                    <button
                       onClick={() => setActiveTab('clients')}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        activeTab === 'clients' 
-                          ? 'bg-violet-600/10 text-violet-400' 
+                        activeTab === 'clients'
+                          ? 'bg-violet-600/10 text-violet-400'
                           : 'text-gray-400 hover:text-white hover:bg-white/5'
                       }`}
                     >
@@ -177,6 +189,7 @@ export function SettingsModal({ open, onClose }: Props) {
                       </form>
                     )}
 
+                    {activeTab === 'task-types' && <TaskTypeManager />}
                     {activeTab === 'clients' && <ClientManager />}
                     {activeTab === 'team' && <TeamManager />}
                     {activeTab === 'billing' && <BillingSettings />}

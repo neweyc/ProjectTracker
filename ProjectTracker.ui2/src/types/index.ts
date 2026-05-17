@@ -15,6 +15,23 @@ export interface Client {
   createdAt: string
 }
 
+export type TaskPriority = 'Low' | 'Medium' | 'High'
+
+export const PRIORITY_ORDER: TaskPriority[] = ['Low', 'Medium', 'High']
+
+export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; dot: string; bg: string; border: string }> = {
+  Low:    { label: 'Low',    color: 'text-sky-400',    dot: 'bg-sky-400',    bg: 'bg-sky-500/10',    border: 'border-sky-500/30' },
+  Medium: { label: 'Medium', color: 'text-amber-400',  dot: 'bg-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/30' },
+  High:   { label: 'High',   color: 'text-red-400',    dot: 'bg-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/30' },
+}
+
+export interface TaskType {
+  id: number
+  name: string
+  color: string
+  sortOrder: number
+}
+
 export type TaskStatus = 'Created' | 'InProgress' | 'Complete'
 
 export interface Project {
@@ -37,6 +54,10 @@ export interface Task {
   subTaskCount: number
   totalHours: number
   createdAt: string
+  typeId?: number | null
+  typeName?: string | null
+  typeColor?: string | null
+  priority?: TaskPriority | null
 }
 
 export interface SubTask {
@@ -67,6 +88,10 @@ export interface TaskDetail {
   isInvoiced: boolean
   createdAt: string
   totalHours: number
+  typeId?: number | null
+  typeName?: string | null
+  typeColor?: string | null
+  priority?: TaskPriority | null
   subTasks: SubTask[]
   timeEntries: TimeEntry[]
 }

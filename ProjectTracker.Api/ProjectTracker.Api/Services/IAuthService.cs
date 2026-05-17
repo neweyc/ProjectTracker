@@ -17,7 +17,7 @@ namespace ProjectTracker.Api.Services
         Task<(User? User, string? Error)> AddUserToTenantAsync(int tenantId, string email, string displayName, string password);
     }
 
-    public class AuthService(ProjectTrackerDbContext context) : IAuthService
+    public class AuthService(ProjectTrackerDbContext context, ITaskTypeService taskTypeService) : IAuthService
     {
         public async Task<(AuthResult? Result, string? Error)> RegisterAsync(RegisterInput input)
         {
@@ -49,6 +49,7 @@ namespace ProjectTracker.Api.Services
             });
 
             await context.SaveChangesAsync();
+            await taskTypeService.SeedDefaultsAsync(tenant.Id);
 
             var user = new User
             {

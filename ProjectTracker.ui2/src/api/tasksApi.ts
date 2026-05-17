@@ -1,17 +1,21 @@
 import { apiClient } from './client'
-import type { Task, TaskDetail, TaskStatus } from '@/types'
+import type { Task, TaskDetail, TaskPriority, TaskStatus } from '@/types'
 
 export interface CreateTaskInput {
   projectId: number
   parentTaskId?: number | null
   title: string
   description?: string
+  typeId?: number | null
+  priority?: TaskPriority | null
 }
 
 export interface UpdateTaskInput {
   title: string
   description?: string | null
   isInvoiced: boolean
+  typeId?: number | null
+  priority?: TaskPriority | null
 }
 
 export const tasksApi = {

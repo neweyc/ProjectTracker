@@ -9,6 +9,8 @@ services:
       Stripe__SoloPriceId: "${STRIPE_SOLO_PRICE_ID}"
       Stripe__TeamPriceId: "${STRIPE_TEAM_PRICE_ID}"
       Stripe__WebhookSecret: "${STRIPE_WEBHOOK_SECRET}"
+      Email_Password: "${EMAIL_PASSWORD}"
+      Email_FromAddress: "${EMAIL_FROMADDRESS}"
 
   ui:
     image: neweyc/olive-ui:latest

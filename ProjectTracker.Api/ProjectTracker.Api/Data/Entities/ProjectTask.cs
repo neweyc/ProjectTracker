@@ -8,8 +8,12 @@ namespace ProjectTracker.Api.Data.Entities
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public ProjectTaskStatus Status { get; set; } = ProjectTaskStatus.Created;
+        public ProjectTaskPriority? Priority { get; set; }
         public bool IsInvoiced { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public int? TypeId { get; set; }
+        public TaskType? Type { get; set; }
 
         public Project Project { get; set; } = null!;
         public ProjectTask? ParentTask { get; set; }

@@ -32,6 +32,8 @@ namespace ProjectTracker.Api
             services.AddScoped<ISettingsService, SettingsService>();
             services.AddScoped<IInvoiceService, ProjectTracker.Api.Services.InvoiceService>();
             services.AddScoped<IBillingService, ProjectTracker.Api.Services.BillingService>();
+            services.AddScoped<ITaskTypeService, TaskTypeService>();
+            services.AddHttpClient<IEmailService, EmailService>();
 
             StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
 
@@ -73,11 +75,19 @@ namespace ProjectTracker.Api
                 .Where(type => endpointServiceType.IsAssignableFrom(type) && !type.IsInterface);
             foreach (var endpointService in endpointServices)
             {
-                IEndpoint? ep = (IEndpoint?)Activator.CreateInstance(endpointService);
-                if (ep != null)
+                try
                 {
-                    ep.MapEndpoint(app);
+                    IEndpoint? ep = (IEndpoint?)Activator.CreateInstance(endpointService);
+                    if (ep != null)
+                    {
+                        ep.MapEndpoint(app);
+                    }
                 }
+                catch(Exception ex)
+                {
+                    var error = ex.Message;
+                }
+                
             }
         }
     }
