@@ -26,7 +26,7 @@ namespace ProjectTracker.Api.Services
         public async Task<bool> ProjectExistsAsync(int projectId, int tenantId)
             => await context.Projects.AnyAsync(p => p.Id == projectId && p.TenantId == tenantId);
 
-        public async Task<ProjectTask?> CreateAsync(int projectId, int? parentTaskId, string title, string? description, int? typeId, int tenantId)
+        public async Task<ProjectTask?> CreateAsync(int projectId, int? parentTaskId, string title, string? description, int? typeId, ProjectTaskPriority? priority, int tenantId)
         {
             if (!await ProjectExistsAsync(projectId, tenantId))
                 return null;
@@ -45,6 +45,7 @@ namespace ProjectTracker.Api.Services
                 Title = title,
                 Description = description,
                 TypeId = typeId,
+                Priority = priority,
                 Status = ProjectTaskStatus.Created,
                 CreatedAt = DateTime.UtcNow,
             };
@@ -53,7 +54,7 @@ namespace ProjectTracker.Api.Services
             return task;
         }
 
-        public async Task<ProjectTask?> UpdateAsync(int id, string title, string? description, bool isInvoiced, int? typeId, int tenantId)
+        public async Task<ProjectTask?> UpdateAsync(int id, string title, string? description, bool isInvoiced, int? typeId, ProjectTaskPriority? priority, int tenantId)
         {
             var task = await context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.Project.TenantId == tenantId);
@@ -62,6 +63,7 @@ namespace ProjectTracker.Api.Services
             task.Description = description;
             task.IsInvoiced = isInvoiced;
             task.TypeId = typeId;
+            task.Priority = priority;
             await context.SaveChangesAsync();
             return task;
         }

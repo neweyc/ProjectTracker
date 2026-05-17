@@ -115,6 +115,7 @@ namespace ProjectTracker.Api.Data
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(500);
                 entity.Property(e => e.Description).HasMaxLength(4000);
                 entity.Property(e => e.Status).HasConversion<string>();
+                entity.Property(e => e.Priority).HasConversion<string>();
 
                 entity.HasOne(e => e.Project)
                     .WithMany(e => e.Tasks)

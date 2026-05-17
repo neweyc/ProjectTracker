@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     project_id     INTEGER      NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     parent_task_id INTEGER          NULL REFERENCES tasks (id) ON DELETE RESTRICT,
     type_id        INTEGER          NULL REFERENCES task_types (id) ON DELETE SET NULL,
+    priority       VARCHAR(20)      NULL,
     title          VARCHAR(500) NOT NULL,
     description    VARCHAR(4000)    NULL,
     status         VARCHAR(50)  NOT NULL,
@@ -194,7 +195,8 @@ FROM (VALUES
     ('20260515171651_AddStripeToTenant',    '10.0.1'),
     ('20260515232548_AddSubscriptionTierToTenant', '10.0.1'),
     ('20260515233350_AddClientsTable',             '10.0.1'),
-    ('20260517000000_AddTaskTypes',                '10.0.1')
+    ('20260517000000_AddTaskTypes',                '10.0.1'),
+    ('20260517000001_AddTaskPriority',             '10.0.1')
 ) AS src ("MigrationId", "ProductVersion")
 WHERE NOT EXISTS (
     SELECT 1 FROM "__EFMigrationsHistory" h

@@ -180,6 +180,7 @@ BEGIN
         ProjectId    INT            NOT NULL,
         ParentTaskId INT                NULL,
         TypeId       INT                NULL,
+        Priority     NVARCHAR(20)       NULL,
         Title        NVARCHAR(500)  NOT NULL,
         Description  NVARCHAR(4000)     NULL,
         Status       NVARCHAR(50)   NOT NULL,
@@ -347,7 +348,8 @@ FROM (VALUES
     (N'20260515171651_AddStripeToTenant',    N'10.0.1'),
     (N'20260515232548_AddSubscriptionTierToTenant', N'10.0.1'),
     (N'20260515233350_AddClientsTable',             N'10.0.1'),
-    (N'20260517000000_AddTaskTypes',                N'10.0.1')
+    (N'20260517000000_AddTaskTypes',                N'10.0.1'),
+    (N'20260517000001_AddTaskPriority',             N'10.0.1')
 ) AS src (MigrationId, ProductVersion)
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.__EFMigrationsHistory h

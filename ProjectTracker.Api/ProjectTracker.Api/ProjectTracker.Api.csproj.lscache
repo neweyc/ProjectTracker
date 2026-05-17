@@ -63,6 +63,7 @@ Data/Entities/
  InvoiceStatus.cs
  Project.cs
  ProjectTask.cs
+ ProjectTaskPriority.cs
  ProjectTaskStatus.cs
  SystemSettings.cs
  TaskType.cs

@@ -24,6 +24,7 @@ namespace ProjectTracker.Api.Features.Tasks.GetTask
                 task.IsInvoiced, task.CreatedAt,
                 task.TimeEntries.Sum(e => e.Hours),
                 task.TypeId, task.Type?.Name, task.Type?.Color,
+                task.Priority?.ToString(),
                 task.SubTasks.Select(s => new SubTaskResponse(
                     s.Id, s.Title, s.Description, s.Status.ToString(), s.IsInvoiced, s.CreatedAt)),
                 task.TimeEntries.Select(e => new TimeEntryResponse(
@@ -35,5 +36,5 @@ namespace ProjectTracker.Api.Features.Tasks.GetTask
 
     public record SubTaskResponse(int Id, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt);
     public record TimeEntryResponse(int Id, decimal Hours, DateTime Date, string? Notes, DateTime CreatedAt);
-    public record GetTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt, decimal TotalHours, int? TypeId, string? TypeName, string? TypeColor, IEnumerable<SubTaskResponse> SubTasks, IEnumerable<TimeEntryResponse> TimeEntries);
+    public record GetTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt, decimal TotalHours, int? TypeId, string? TypeName, string? TypeColor, string? Priority, IEnumerable<SubTaskResponse> SubTasks, IEnumerable<TimeEntryResponse> TimeEntries);
 }

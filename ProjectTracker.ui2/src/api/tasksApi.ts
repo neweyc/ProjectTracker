@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import type { Task, TaskDetail, TaskStatus } from '@/types'
+import type { Task, TaskDetail, TaskPriority, TaskStatus } from '@/types'
 
 export interface CreateTaskInput {
   projectId: number
@@ -7,6 +7,7 @@ export interface CreateTaskInput {
   title: string
   description?: string
   typeId?: number | null
+  priority?: TaskPriority | null
 }
 
 export interface UpdateTaskInput {
@@ -14,6 +15,7 @@ export interface UpdateTaskInput {
   description?: string | null
   isInvoiced: boolean
   typeId?: number | null
+  priority?: TaskPriority | null
 }
 
 export const tasksApi = {

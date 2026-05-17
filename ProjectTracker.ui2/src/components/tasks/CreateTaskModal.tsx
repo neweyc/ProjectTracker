@@ -5,6 +5,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useCreateTask } from '@/hooks/useTasks'
 import { useTaskTypes } from '@/hooks/useTaskTypes'
+import { PRIORITY_ORDER, PRIORITY_CONFIG } from '@/types'
+import type { TaskPriority } from '@/types'
 
 interface Props {
   open: boolean
@@ -24,9 +26,10 @@ export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTask
   const createTask = useCreateTask()
   const { data: taskTypes = [] } = useTaskTypes()
   const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null)
+  const [selectedPriority, setSelectedPriority] = useState<TaskPriority | null>(null)
 
   useEffect(() => {
-    if (!open) { reset(); setSelectedTypeId(null) }
+    if (!open) { reset(); setSelectedTypeId(null); setSelectedPriority(null) }
   }, [open, reset])
 
   const onSubmit = async (data: FormData) => {
@@ -36,6 +39,7 @@ export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTask
       title: data.title,
       description: data.description || undefined,
       typeId: selectedTypeId,
+      priority: selectedPriority,
     })
     onClose()
     if (!parentTaskId) onTaskCreated?.(task.id)
@@ -83,6 +87,44 @@ export function CreateTaskModal({ open, onClose, projectId, parentTaskId, onTask
                       <p className="mt-1 text-xs text-red-400">{errors.title.message}</p>
                     )}
                   </div>
+
+                  {!isSubtask && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                        Priority <span className="text-gray-600">(optional)</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPriority(null)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                            selectedPriority === null
+                              ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
+                              : 'border-[#374151] text-gray-500 hover:border-[#4b5563] hover:text-gray-300'
+                          }`}
+                        >
+                          None
+                        </button>
+                        {PRIORITY_ORDER.map(p => {
+                          const cfg = PRIORITY_CONFIG[p]
+                          return (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={() => setSelectedPriority(p)}
+                              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                                selectedPriority === p
+                                  ? `${cfg.color} ${cfg.bg} ${cfg.border}`
+                                  : 'border-[#374151] text-gray-500 hover:border-[#4b5563] hover:text-gray-300'
+                              }`}
+                            >
+                              {cfg.label}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {!isSubtask && taskTypes.length > 0 && (
                     <div>

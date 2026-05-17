@@ -1,3 +1,4 @@
+using ProjectTracker.Api.Data.Entities;
 using ProjectTracker.Api.Routing;
 using ProjectTracker.Api.Services;
 
@@ -22,7 +23,7 @@ namespace ProjectTracker.Api.Features.Tasks.CreateTask
                 return Results.BadRequest($"Project {request.ProjectId} does not exist.");
 
             var task = await taskService.CreateAsync(
-                request.ProjectId, request.ParentTaskId, request.Title.Trim(), request.Description?.Trim(), request.TypeId, currentUser.TenantId);
+                request.ProjectId, request.ParentTaskId, request.Title.Trim(), request.Description?.Trim(), request.TypeId, request.Priority, currentUser.TenantId);
 
             if (task is null)
                 return Results.BadRequest("Parent task not found or is already a subtask.");
@@ -30,10 +31,10 @@ namespace ProjectTracker.Api.Features.Tasks.CreateTask
             return Results.Created($"/api/tasks/{task.Id}", new CreateTaskResponse(
                 task.Id, task.ProjectId, task.ParentTaskId,
                 task.Title, task.Description, task.Status.ToString(),
-                task.IsInvoiced, task.CreatedAt, task.TypeId));
+                task.IsInvoiced, task.CreatedAt, task.TypeId, task.Priority?.ToString()));
         }
     }
 
-    public record CreateTaskRequest(int ProjectId, int? ParentTaskId, string Title, string? Description, int? TypeId);
-    public record CreateTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt, int? TypeId);
+    public record CreateTaskRequest(int ProjectId, int? ParentTaskId, string Title, string? Description, int? TypeId, ProjectTaskPriority? Priority);
+    public record CreateTaskResponse(int Id, int ProjectId, int? ParentTaskId, string Title, string? Description, string Status, bool IsInvoiced, DateTime CreatedAt, int? TypeId, string? Priority);
 }
