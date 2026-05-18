@@ -13,10 +13,15 @@ namespace ProjectTracker.Api.Features.Invoices.CreateInvoice
                 .RequireAuthorization();
         }
 
-        private static async Task<IResult> Handle(int projectId, CreateInvoiceRequest request, IInvoiceService invoiceService, ICurrentUser currentUser)
+        private static async Task<IResult> Handle(int projectId, CreateInvoiceRequest request, IInvoiceService invoiceService, IBillingService billingService, ICurrentUser currentUser)
         {
             if (request.LineItems == null || !request.LineItems.Any())
                 return Results.BadRequest("At least one line item is required.");
+
+            var tier = await billingService.GetSubscriptionTierAsync(currentUser.TenantId);
+            var max = SubscriptionLimits.MaxInvoices(tier);
+            if (max.HasValue && await invoiceService.CountAllAsync(currentUser.TenantId) >= max.Value)
+                return Results.Json(new { error = "limit_reached", message = SubscriptionLimits.UpgradeMessage("invoices", max.Value) }, statusCode: 402);
 
             var dtos = new CreateInvoiceDto(
                 request.ClientName,

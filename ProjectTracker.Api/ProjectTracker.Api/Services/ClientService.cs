@@ -10,6 +10,9 @@ namespace ProjectTracker.Api.Services
 {
     public class ClientService(ProjectTrackerDbContext context) : IClientService
     {
+        public Task<int> CountAsync(int tenantId)
+            => context.Clients.CountAsync(c => c.TenantId == tenantId);
+
         public async Task<IEnumerable<Client>> GetAllAsync(int tenantId)
             => await context.Clients
                 .Where(c => c.TenantId == tenantId)

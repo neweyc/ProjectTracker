@@ -25,10 +25,15 @@ namespace ProjectTracker.Api.Features.Clients
                     : Results.NotFound();
             });
 
-            group.MapPost("/", async (CreateClientRequest request, IClientService clientService, ICurrentUser currentUser) =>
+            group.MapPost("/", async (CreateClientRequest request, IClientService clientService, IBillingService billingService, ICurrentUser currentUser) =>
             {
                 if (string.IsNullOrWhiteSpace(request.Name))
                     return Results.BadRequest("Name is required.");
+
+                var tier = await billingService.GetSubscriptionTierAsync(currentUser.TenantId);
+                var max = SubscriptionLimits.MaxClients(tier);
+                if (max.HasValue && await clientService.CountAsync(currentUser.TenantId) >= max.Value)
+                    return Results.Json(new { error = "limit_reached", message = SubscriptionLimits.UpgradeMessage("clients", max.Value) }, statusCode: 402);
 
                 var client = await clientService.CreateAsync(request.Name, request.Email, request.Address, currentUser.TenantId);
                 return Results.Created($"/api/clients/{client.Id}", new ClientResponse(client.Id, client.Name, client.Email, client.Address, client.CreatedAt));

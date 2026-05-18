@@ -12,7 +12,7 @@ namespace ProjectTracker.Api.Features.Auth
                 .WithTags("Auth");
         }
 
-        private static async Task<IResult> Handle(RegisterRequest request, IAuthService authService, HttpContext httpContext)
+        private static async Task<IResult> Handle(RegisterRequest request, IAuthService authService, IBillingService billingService, HttpContext httpContext)
         {
             if (string.IsNullOrWhiteSpace(request.TenantName) ||
                 string.IsNullOrWhiteSpace(request.Email) ||
@@ -29,7 +29,9 @@ namespace ProjectTracker.Api.Features.Auth
                 return Results.Conflict(new { error });
 
             await AuthHelpers.SignIn(httpContext, result);
-            return Results.Ok(new AuthResponse(result.UserId, result.TenantId, result.Email, result.DisplayName));
+            var status = await billingService.GetSubscriptionStatusAsync(result.TenantId);
+            var tier = await billingService.GetSubscriptionTierAsync(result.TenantId);
+            return Results.Ok(new AuthResponse(result.UserId, result.TenantId, result.Email, result.DisplayName, status, tier));
         }
     }
 

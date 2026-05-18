@@ -12,7 +12,7 @@ namespace ProjectTracker.Api.Features.Auth
                 .WithTags("Auth");
         }
 
-        private static async Task<IResult> Handle(LoginRequest request, IAuthService authService, HttpContext httpContext)
+        private static async Task<IResult> Handle(LoginRequest request, IAuthService authService, IBillingService billingService, HttpContext httpContext)
         {
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return Results.BadRequest("Email and Password are required.");
@@ -22,7 +22,9 @@ namespace ProjectTracker.Api.Features.Auth
                 return Results.Unauthorized();
 
             await AuthHelpers.SignIn(httpContext, result);
-            return Results.Ok(new AuthResponse(result.UserId, result.TenantId, result.Email, result.DisplayName));
+            var status = await billingService.GetSubscriptionStatusAsync(result.TenantId);
+            var tier = await billingService.GetSubscriptionTierAsync(result.TenantId);
+            return Results.Ok(new AuthResponse(result.UserId, result.TenantId, result.Email, result.DisplayName, status, tier));
         }
     }
 

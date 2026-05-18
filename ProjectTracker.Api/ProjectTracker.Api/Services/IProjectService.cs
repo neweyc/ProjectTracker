@@ -7,6 +7,7 @@ namespace ProjectTracker.Api.Services
     public interface IProjectService
     {
         Task<IEnumerable<ProjectListItem>> GetAllAsync(int tenantId);
+        Task<int> CountAsync(int tenantId);
         Task<Project?> GetByIdAsync(int id, int tenantId);
         Task<Project> CreateAsync(string name, string? description, int tenantId);
         Task<Project> CreateWithClientAsync(string name, string? description, int? clientId, int tenantId);

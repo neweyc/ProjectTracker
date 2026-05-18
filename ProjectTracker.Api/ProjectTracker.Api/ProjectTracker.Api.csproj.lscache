@@ -153,6 +153,7 @@ Services/
  ITimeEntryService.cs
  ProjectService.cs
  SettingsService.cs
+ SubscriptionLimits.cs
  TaskService.cs
  TaskTypeService.cs
  TimeEntryService.cs

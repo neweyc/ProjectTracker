@@ -6,6 +6,9 @@ namespace ProjectTracker.Api.Services
 {
     public class InvoiceService(ProjectTrackerDbContext context, ISettingsService settingsService) : IInvoiceService
     {
+        public Task<int> CountAllAsync(int tenantId)
+            => context.Invoices.CountAsync(i => i.Project.TenantId == tenantId);
+
         public async Task<IEnumerable<Invoice>> GetByProjectAsync(int projectId, int tenantId)
             => await context.Invoices
                 .Include(i => i.LineItems)
