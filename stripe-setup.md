@@ -5,6 +5,7 @@
 Go to **Stripe Dashboard → Product catalogue → Add product**.
 
 **Solo product:**
+
 - Name: `Solo`
 - Pricing model: Standard pricing
 - Price: `$9.00` / month (recurring)
@@ -12,11 +13,13 @@ Go to **Stripe Dashboard → Product catalogue → Add product**.
 - Copy the **Price ID** — looks like `price_1ABC...`
 
 **Team product:**
+
 - Name: `Team`
 - Same as above but `$29.00` / month
 - Copy the **Price ID**
 
 Update `.env` with the real price IDs:
+
 ```
 STRIPE_SOLO_PRICE_ID=price_xxxxxxxxxxxxxxxxxxxxxxxx
 STRIPE_TEAM_PRICE_ID=price_xxxxxxxxxxxxxxxxxxxxxxxx
@@ -27,13 +30,15 @@ STRIPE_TEAM_PRICE_ID=price_xxxxxxxxxxxxxxxxxxxxxxxx
 ## 2. Fix the Webhook Secret Whitespace Bug
 
 The current `.env` has a leading space after `=` on the webhook secret line:
+
 ```
 STRIPE_WEBHOOK_SECRET= whsec_edad...   ← space here causes every webhook to return 400
 ```
 
 Remove it:
+
 ```
-STRIPE_WEBHOOK_SECRET=whsec_edad1dbbc4e5f36665cc7ce9cc7402f0156a7211f43c1484baf8e27eab7f1a23
+STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
 ---
@@ -50,6 +55,7 @@ Go to **Stripe Dashboard → Developers → Webhooks → Add endpoint**.
   - `invoice.payment_failed`
 
 After saving, click the endpoint and reveal the **Signing secret** (`whsec_...`). Update `.env`:
+
 ```
 STRIPE_WEBHOOK_SECRET=whsec_yournewsecret
 ```
@@ -92,6 +98,7 @@ stripe listen --forward-to http://localhost:5260/api/webhooks/stripe
 The CLI prints a **local** signing secret (`whsec_...`). Use that in `.env` while testing locally — **not** the production one. Switch back to the production secret before deploying.
 
 **Trigger test events:**
+
 ```bash
 # Simulate a successful subscription
 stripe trigger checkout.session.completed
@@ -111,10 +118,10 @@ The frontend calls `POST /api/billing/checkout` with `{ tier, successUrl, cancel
 
 ```ts
 billingApi.createCheckoutSession(
-  'Solo',
-  'https://oliveinvoice.com?checkout=success',   // Stripe redirects here after payment
-  'https://oliveinvoice.com?checkout=canceled'   // Stripe redirects here if user cancels
-)
+  "Solo",
+  "https://oliveinvoice.com?checkout=success", // Stripe redirects here after payment
+  "https://oliveinvoice.com?checkout=canceled", // Stripe redirects here if user cancels
+);
 ```
 
 The `tier` value must be exactly `"Solo"` or `"Team"` — casing matters as it is stored in the database and compared directly.
@@ -140,10 +147,10 @@ The `docker-compose.yml` maps these to the ASP.NET configuration keys the code e
 
 ## Subscription Status Reference
 
-| Stripe Status | Meaning | App behaviour |
-|---|---|---|
-| `active` | Paying, all good | Full access for their tier |
-| `past_due` | Payment failed, Stripe retrying | Full access maintained during retry window |
-| `canceled` | Canceled or retries exhausted | Downgraded to Free tier |
-| `unpaid` | All retries failed, not yet deleted | Downgraded to Free tier |
-| `trialing` | In trial period | Full access for their tier |
+| Stripe Status | Meaning                             | App behaviour                              |
+| ------------- | ----------------------------------- | ------------------------------------------ |
+| `active`      | Paying, all good                    | Full access for their tier                 |
+| `past_due`    | Payment failed, Stripe retrying     | Full access maintained during retry window |
+| `canceled`    | Canceled or retries exhausted       | Downgraded to Free tier                    |
+| `unpaid`      | All retries failed, not yet deleted | Downgraded to Free tier                    |
+| `trialing`    | In trial period                     | Full access for their tier                 |
